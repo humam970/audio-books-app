@@ -1,0 +1,75 @@
+{
+	"library_version": "1.2",
+	"total_books": 3,
+	"books": [
+		{
+			"id": "ab-001",
+			"title": "The Midnight Library",
+			"author": {
+				"name": "Matt Haig",
+				"bio": "English novelist and journalist."
+			},
+			"narrator": "Carey Mulligan",
+			"duration": {
+				"hours": 8,
+				"minutes": 52
+			},
+			"genres": ["Contemporary Fiction", "Fantasy", "Philosophical"],
+			"rating": 4.8,
+			"release_date": "2020-08-13",
+			"cover_image_url": "/images/whale.png",
+			"audio_preview_url": "empty",
+			"is_abridged": false,
+			"chapters": [
+				{ "title": "The Shelf", "start_time": 0, "end_time": 320 },
+				{ "title": "The Librarian", "start_time": 321, "end_time": 845 }
+			]
+		},
+		{
+			"id": "ab-002",
+			"title": "Atomic Habits",
+			"author": {
+				"name": "James Clear",
+				"bio": "Specialist in habits, decision making, and continuous improvement."
+			},
+			"narrator": "James Clear",
+			"duration": {
+				"hours": 5,
+				"minutes": 35
+			},
+			"genres": ["Self-Help", "Psychology", "Productivity"],
+			"rating": 4.9,
+			"release_date": "2018-10-16",
+			"cover_image_url": "/images/rabbit.png",
+			"audio_preview_url": "empty",
+			"is_abridged": false,
+			"chapters": [
+				{ "title": "The Fundamentals", "start_time": 0, "end_time": 1200 },
+				{ "title": "The 1st Law", "start_time": 1201, "end_time": 2400 }
+			]
+		},
+		{
+			"id": "ab-003",
+			"title": "Project Hail Mary",
+			"author": {
+				"name": "Andy Weir",
+				"bio": "Former programmer and science fiction author."
+			},
+			"narrator": "Ray Porter",
+			"duration": {
+				"hours": 16,
+				"minutes": 10
+			},
+			"genres": ["Science Fiction", "Thriller"],
+			"rating": 4.9,
+			"release_date": "2021-05-04",
+			"cover_image_url": "/images/hand.png",
+			"audio_preview_url": "empty",
+			"is_abridged": false,
+			"chapters": [
+				{ "title": "Awakening", "start_time": 0, "end_time": 1500 },
+				{ "title": "The Lab", "start_time": 1501, "end_time": 3000 }
+			]
+		}
+	]
+}

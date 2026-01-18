@@ -1,0 +1,14 @@
+version: "2"
+
+sql:
+  - engine: "postgresql"
+    schema: "./migrations/00001_schema.sql"
+    queries: "./queries.sql"
+    gen:
+      go:
+        package: "repo"
+        out: "./repo"
+        sql_package: "database/sql"
+        sql_driver: "github.com/jackc/pgx/v5"
+        emit_json_tags: true
+        json_tags_case_style: "snake"
