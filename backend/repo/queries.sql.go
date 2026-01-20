@@ -7,11 +7,9 @@ package repo
 
 import (
 	"context"
-	"database/sql"
-	"time"
 
 	"github.com/google/uuid"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addAuthorToBook = `-- name: AddAuthorToBook :exec
@@ -25,7 +23,7 @@ type AddAuthorToBookParams struct {
 }
 
 func (q *Queries) AddAuthorToBook(ctx context.Context, arg AddAuthorToBookParams) error {
-	_, err := q.db.ExecContext(ctx, addAuthorToBook, arg.BookID, arg.AuthorID)
+	_, err := q.db.Exec(ctx, addAuthorToBook, arg.BookID, arg.AuthorID)
 	return err
 }
 
@@ -40,7 +38,7 @@ type AddGenreToBookParams struct {
 }
 
 func (q *Queries) AddGenreToBook(ctx context.Context, arg AddGenreToBookParams) error {
-	_, err := q.db.ExecContext(ctx, addGenreToBook, arg.BookID, arg.GenreID)
+	_, err := q.db.Exec(ctx, addGenreToBook, arg.BookID, arg.GenreID)
 	return err
 }
 
@@ -55,7 +53,7 @@ type AddNarratorToBookParams struct {
 }
 
 func (q *Queries) AddNarratorToBook(ctx context.Context, arg AddNarratorToBookParams) error {
-	_, err := q.db.ExecContext(ctx, addNarratorToBook, arg.BookID, arg.NarratorID)
+	_, err := q.db.Exec(ctx, addNarratorToBook, arg.BookID, arg.NarratorID)
 	return err
 }
 
@@ -71,7 +69,7 @@ type CreateAuthorParams struct {
 }
 
 func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Author, error) {
-	row := q.db.QueryRowContext(ctx, createAuthor, arg.Name, arg.Bio)
+	row := q.db.QueryRow(ctx, createAuthor, arg.Name, arg.Bio)
 	var i Author
 	err := row.Scan(&i.ID, &i.Name, &i.Bio)
 	return i, err
@@ -100,18 +98,18 @@ RETURNING id, title, duration_seconds, rating, release_date, cover_image_url, au
 `
 
 type CreateBookParams struct {
-	Title           string    `json:"title"`
-	DurationSeconds int32     `json:"duration_seconds"`
-	Rating          string    `json:"rating"`
-	ReleaseDate     time.Time `json:"release_date"`
-	CoverImageUrl   string    `json:"cover_image_url"`
-	AudioPreviewUrl string    `json:"audio_preview_url"`
-	IsAbridged      bool      `json:"is_abridged"`
+	Title           string         `json:"title"`
+	DurationSeconds int32          `json:"duration_seconds"`
+	Rating          pgtype.Numeric `json:"rating"`
+	ReleaseDate     pgtype.Date    `json:"release_date"`
+	CoverImageUrl   string         `json:"cover_image_url"`
+	AudioPreviewUrl string         `json:"audio_preview_url"`
+	IsAbridged      bool           `json:"is_abridged"`
 }
 
 // -----------------------------------------------------------------------------------------------------
 func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, error) {
-	row := q.db.QueryRowContext(ctx, createBook,
+	row := q.db.QueryRow(ctx, createBook,
 		arg.Title,
 		arg.DurationSeconds,
 		arg.Rating,
@@ -152,7 +150,7 @@ type CreateChapterParams struct {
 
 // -----------------------------------------------------------------------------------------------------
 func (q *Queries) CreateChapter(ctx context.Context, arg CreateChapterParams) (Chapter, error) {
-	row := q.db.QueryRowContext(ctx, createChapter,
+	row := q.db.QueryRow(ctx, createChapter,
 		arg.BookID,
 		arg.Title,
 		arg.StartTime,
@@ -178,7 +176,7 @@ INSERT INTO genres (name) VALUES ($1) RETURNING id, name
 
 // -----------------------------------------------------------------------------------------------------
 func (q *Queries) CreateGenre(ctx context.Context, name string) (Genre, error) {
-	row := q.db.QueryRowContext(ctx, createGenre, name)
+	row := q.db.QueryRow(ctx, createGenre, name)
 	var i Genre
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
@@ -192,13 +190,13 @@ RETURNING id, name, bio
 `
 
 type CreateNarratorParams struct {
-	Name string         `json:"name"`
-	Bio  sql.NullString `json:"bio"`
+	Name string      `json:"name"`
+	Bio  pgtype.Text `json:"bio"`
 }
 
 // -----------------------------------------------------------------------------------------------------
 func (q *Queries) CreateNarrator(ctx context.Context, arg CreateNarratorParams) (Narrator, error) {
-	row := q.db.QueryRowContext(ctx, createNarrator, arg.Name, arg.Bio)
+	row := q.db.QueryRow(ctx, createNarrator, arg.Name, arg.Bio)
 	var i Narrator
 	err := row.Scan(&i.ID, &i.Name, &i.Bio)
 	return i, err
@@ -209,7 +207,7 @@ DELETE FROM authors WHERE id = $1
 `
 
 func (q *Queries) DeleteAuthor(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteAuthor, id)
+	_, err := q.db.Exec(ctx, deleteAuthor, id)
 	return err
 }
 
@@ -218,7 +216,7 @@ DELETE FROM books WHERE id = $1
 `
 
 func (q *Queries) DeleteBook(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteBook, id)
+	_, err := q.db.Exec(ctx, deleteBook, id)
 	return err
 }
 
@@ -227,7 +225,7 @@ DELETE FROM chapters WHERE id = $1
 `
 
 func (q *Queries) DeleteChapter(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteChapter, id)
+	_, err := q.db.Exec(ctx, deleteChapter, id)
 	return err
 }
 
@@ -236,7 +234,7 @@ DELETE FROM genres WHERE id = $1
 `
 
 func (q *Queries) DeleteGenre(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteGenre, id)
+	_, err := q.db.Exec(ctx, deleteGenre, id)
 	return err
 }
 
@@ -245,7 +243,7 @@ DELETE FROM narrators WHERE id = $1
 `
 
 func (q *Queries) DeleteNarrator(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteNarrator, id)
+	_, err := q.db.Exec(ctx, deleteNarrator, id)
 	return err
 }
 
@@ -254,7 +252,7 @@ SELECT id, name, bio FROM authors WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetAuthor(ctx context.Context, id uuid.UUID) (Author, error) {
-	row := q.db.QueryRowContext(ctx, getAuthor, id)
+	row := q.db.QueryRow(ctx, getAuthor, id)
 	var i Author
 	err := row.Scan(&i.ID, &i.Name, &i.Bio)
 	return i, err
@@ -276,21 +274,21 @@ LIMIT 1
 `
 
 type GetBookRow struct {
-	ID              uuid.UUID `json:"id"`
-	Title           string    `json:"title"`
-	DurationSeconds int32     `json:"duration_seconds"`
-	Rating          string    `json:"rating"`
-	ReleaseDate     time.Time `json:"release_date"`
-	CoverImageUrl   string    `json:"cover_image_url"`
-	AudioPreviewUrl string    `json:"audio_preview_url"`
-	IsAbridged      bool      `json:"is_abridged"`
-	CreatedAt       time.Time `json:"created_at"`
-	Authors         []string  `json:"authors"`
-	Narrators       []string  `json:"narrators"`
+	ID              uuid.UUID          `json:"id"`
+	Title           string             `json:"title"`
+	DurationSeconds int32              `json:"duration_seconds"`
+	Rating          pgtype.Numeric     `json:"rating"`
+	ReleaseDate     pgtype.Date        `json:"release_date"`
+	CoverImageUrl   string             `json:"cover_image_url"`
+	AudioPreviewUrl string             `json:"audio_preview_url"`
+	IsAbridged      bool               `json:"is_abridged"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	Authors         []string           `json:"authors"`
+	Narrators       []string           `json:"narrators"`
 }
 
 func (q *Queries) GetBook(ctx context.Context, id uuid.UUID) (GetBookRow, error) {
-	row := q.db.QueryRowContext(ctx, getBook, id)
+	row := q.db.QueryRow(ctx, getBook, id)
 	var i GetBookRow
 	err := row.Scan(
 		&i.ID,
@@ -302,8 +300,8 @@ func (q *Queries) GetBook(ctx context.Context, id uuid.UUID) (GetBookRow, error)
 		&i.AudioPreviewUrl,
 		&i.IsAbridged,
 		&i.CreatedAt,
-		pq.Array(&i.Authors),
-		pq.Array(&i.Narrators),
+		&i.Authors,
+		&i.Narrators,
 	)
 	return i, err
 }
@@ -313,7 +311,7 @@ SELECT id, name FROM genres WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetGenre(ctx context.Context, id uuid.UUID) (Genre, error) {
-	row := q.db.QueryRowContext(ctx, getGenre, id)
+	row := q.db.QueryRow(ctx, getGenre, id)
 	var i Genre
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
@@ -326,7 +324,7 @@ WHERE bg.book_id = $1
 `
 
 func (q *Queries) GetGenresForBook(ctx context.Context, id uuid.UUID) ([]Genre, error) {
-	rows, err := q.db.QueryContext(ctx, getGenresForBook, id)
+	rows, err := q.db.Query(ctx, getGenresForBook, id)
 	if err != nil {
 		return nil, err
 	}
@@ -339,9 +337,6 @@ func (q *Queries) GetGenresForBook(ctx context.Context, id uuid.UUID) ([]Genre, 
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -353,7 +348,7 @@ SELECT id, name, bio FROM narrators WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetNarrator(ctx context.Context, id uuid.UUID) (Narrator, error) {
-	row := q.db.QueryRowContext(ctx, getNarrator, id)
+	row := q.db.QueryRow(ctx, getNarrator, id)
 	var i Narrator
 	err := row.Scan(&i.ID, &i.Name, &i.Bio)
 	return i, err
@@ -364,7 +359,7 @@ SELECT id, name, bio FROM authors ORDER BY name
 `
 
 func (q *Queries) ListAuthors(ctx context.Context) ([]Author, error) {
-	rows, err := q.db.QueryContext(ctx, listAuthors)
+	rows, err := q.db.Query(ctx, listAuthors)
 	if err != nil {
 		return nil, err
 	}
@@ -376,9 +371,6 @@ func (q *Queries) ListAuthors(ctx context.Context) ([]Author, error) {
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -402,16 +394,16 @@ ORDER BY b.release_date DESC
 `
 
 type ListBooksRow struct {
-	ID            uuid.UUID `json:"id"`
-	Title         string    `json:"title"`
-	ReleaseDate   time.Time `json:"release_date"`
-	CoverImageUrl string    `json:"cover_image_url"`
-	Rating        string    `json:"rating"`
-	Authors       []string  `json:"authors"`
+	ID            uuid.UUID      `json:"id"`
+	Title         string         `json:"title"`
+	ReleaseDate   pgtype.Date    `json:"release_date"`
+	CoverImageUrl string         `json:"cover_image_url"`
+	Rating        pgtype.Numeric `json:"rating"`
+	Authors       []string       `json:"authors"`
 }
 
 func (q *Queries) ListBooks(ctx context.Context) ([]ListBooksRow, error) {
-	rows, err := q.db.QueryContext(ctx, listBooks)
+	rows, err := q.db.Query(ctx, listBooks)
 	if err != nil {
 		return nil, err
 	}
@@ -425,14 +417,11 @@ func (q *Queries) ListBooks(ctx context.Context) ([]ListBooksRow, error) {
 			&i.ReleaseDate,
 			&i.CoverImageUrl,
 			&i.Rating,
-			pq.Array(&i.Authors),
+			&i.Authors,
 		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -447,7 +436,7 @@ ORDER BY order_index ASC
 `
 
 func (q *Queries) ListChaptersByBook(ctx context.Context, bookID uuid.UUID) ([]Chapter, error) {
-	rows, err := q.db.QueryContext(ctx, listChaptersByBook, bookID)
+	rows, err := q.db.Query(ctx, listChaptersByBook, bookID)
 	if err != nil {
 		return nil, err
 	}
@@ -467,9 +456,6 @@ func (q *Queries) ListChaptersByBook(ctx context.Context, bookID uuid.UUID) ([]C
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -481,7 +467,7 @@ SELECT id, name FROM genres ORDER BY name
 `
 
 func (q *Queries) ListGenres(ctx context.Context) ([]Genre, error) {
-	rows, err := q.db.QueryContext(ctx, listGenres)
+	rows, err := q.db.Query(ctx, listGenres)
 	if err != nil {
 		return nil, err
 	}
@@ -494,9 +480,6 @@ func (q *Queries) ListGenres(ctx context.Context) ([]Genre, error) {
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -508,7 +491,7 @@ SELECT id, name, bio FROM narrators ORDER BY name
 `
 
 func (q *Queries) ListNarrators(ctx context.Context) ([]Narrator, error) {
-	rows, err := q.db.QueryContext(ctx, listNarrators)
+	rows, err := q.db.Query(ctx, listNarrators)
 	if err != nil {
 		return nil, err
 	}
@@ -520,9 +503,6 @@ func (q *Queries) ListNarrators(ctx context.Context) ([]Narrator, error) {
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -541,7 +521,7 @@ type RemoveAuthorFromBookParams struct {
 }
 
 func (q *Queries) RemoveAuthorFromBook(ctx context.Context, arg RemoveAuthorFromBookParams) error {
-	_, err := q.db.ExecContext(ctx, removeAuthorFromBook, arg.BookID, arg.AuthorID)
+	_, err := q.db.Exec(ctx, removeAuthorFromBook, arg.BookID, arg.AuthorID)
 	return err
 }
 
@@ -556,7 +536,7 @@ type RemoveGenreFromBookParams struct {
 }
 
 func (q *Queries) RemoveGenreFromBook(ctx context.Context, arg RemoveGenreFromBookParams) error {
-	_, err := q.db.ExecContext(ctx, removeGenreFromBook, arg.BookID, arg.GenreID)
+	_, err := q.db.Exec(ctx, removeGenreFromBook, arg.BookID, arg.GenreID)
 	return err
 }
 
@@ -571,7 +551,7 @@ type RemoveNarratorFromBookParams struct {
 }
 
 func (q *Queries) RemoveNarratorFromBook(ctx context.Context, arg RemoveNarratorFromBookParams) error {
-	_, err := q.db.ExecContext(ctx, removeNarratorFromBook, arg.BookID, arg.NarratorID)
+	_, err := q.db.Exec(ctx, removeNarratorFromBook, arg.BookID, arg.NarratorID)
 	return err
 }
 
@@ -589,7 +569,7 @@ type UpdateAuthorParams struct {
 }
 
 func (q *Queries) UpdateAuthor(ctx context.Context, arg UpdateAuthorParams) (Author, error) {
-	row := q.db.QueryRowContext(ctx, updateAuthor, arg.Name, arg.Bio, arg.ID)
+	row := q.db.QueryRow(ctx, updateAuthor, arg.Name, arg.Bio, arg.ID)
 	var i Author
 	err := row.Scan(&i.ID, &i.Name, &i.Bio)
 	return i, err
@@ -606,14 +586,14 @@ RETURNING id, title, duration_seconds, rating, release_date, cover_image_url, au
 `
 
 type UpdateBookParams struct {
-	Title      string    `json:"title"`
-	Rating     string    `json:"rating"`
-	IsAbridged bool      `json:"is_abridged"`
-	ID         uuid.UUID `json:"id"`
+	Title      string         `json:"title"`
+	Rating     pgtype.Numeric `json:"rating"`
+	IsAbridged bool           `json:"is_abridged"`
+	ID         uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error) {
-	row := q.db.QueryRowContext(ctx, updateBook,
+	row := q.db.QueryRow(ctx, updateBook,
 		arg.Title,
 		arg.Rating,
 		arg.IsAbridged,
@@ -654,7 +634,7 @@ type UpdateChapterParams struct {
 }
 
 func (q *Queries) UpdateChapter(ctx context.Context, arg UpdateChapterParams) (Chapter, error) {
-	row := q.db.QueryRowContext(ctx, updateChapter,
+	row := q.db.QueryRow(ctx, updateChapter,
 		arg.Title,
 		arg.StartTime,
 		arg.EndTime,
@@ -681,13 +661,13 @@ RETURNING id, name, bio
 `
 
 type UpdateNarratorParams struct {
-	Name string         `json:"name"`
-	Bio  sql.NullString `json:"bio"`
-	ID   uuid.UUID      `json:"id"`
+	Name string      `json:"name"`
+	Bio  pgtype.Text `json:"bio"`
+	ID   uuid.UUID   `json:"id"`
 }
 
 func (q *Queries) UpdateNarrator(ctx context.Context, arg UpdateNarratorParams) (Narrator, error) {
-	row := q.db.QueryRowContext(ctx, updateNarrator, arg.Name, arg.Bio, arg.ID)
+	row := q.db.QueryRow(ctx, updateNarrator, arg.Name, arg.Bio, arg.ID)
 	var i Narrator
 	err := row.Scan(&i.ID, &i.Name, &i.Bio)
 	return i, err

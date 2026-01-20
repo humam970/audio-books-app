@@ -5,10 +5,8 @@
 package repo
 
 import (
-	"database/sql"
-	"time"
-
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Author struct {
@@ -18,15 +16,15 @@ type Author struct {
 }
 
 type Book struct {
-	ID              uuid.UUID `json:"id"`
-	Title           string    `json:"title"`
-	DurationSeconds int32     `json:"duration_seconds"`
-	Rating          string    `json:"rating"`
-	ReleaseDate     time.Time `json:"release_date"`
-	CoverImageUrl   string    `json:"cover_image_url"`
-	AudioPreviewUrl string    `json:"audio_preview_url"`
-	IsAbridged      bool      `json:"is_abridged"`
-	CreatedAt       time.Time `json:"created_at"`
+	ID              uuid.UUID          `json:"id"`
+	Title           string             `json:"title"`
+	DurationSeconds int32              `json:"duration_seconds"`
+	Rating          pgtype.Numeric     `json:"rating"`
+	ReleaseDate     pgtype.Date        `json:"release_date"`
+	CoverImageUrl   string             `json:"cover_image_url"`
+	AudioPreviewUrl string             `json:"audio_preview_url"`
+	IsAbridged      bool               `json:"is_abridged"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 }
 
 type BookAuthor struct {
@@ -59,7 +57,7 @@ type Genre struct {
 }
 
 type Narrator struct {
-	ID   uuid.UUID      `json:"id"`
-	Name string         `json:"name"`
-	Bio  sql.NullString `json:"bio"`
+	ID   uuid.UUID   `json:"id"`
+	Name string      `json:"name"`
+	Bio  pgtype.Text `json:"bio"`
 }
