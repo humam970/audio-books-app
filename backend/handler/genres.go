@@ -1,21 +1,15 @@
 package handler
 
 import (
-	"bookserve/repo"
 	"database/sql"
-	"encoding/json"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
-type CreateGenreRequest struct {
-	Name string `json:"name"`
-}
-
 func (h *handler) CreateGenre(w http.ResponseWriter, r *http.Request) {
-	req := CreateGenreRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	req, err := decodeRequestBody[CreateGenreRequest](r)
+	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
@@ -76,24 +70,19 @@ func (h *handler) DeleteGenre(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) AddGenreToBook(w http.ResponseWriter, r *http.Request) {
-	bookID, err := uuid.Parse(r.PathValue("book_id"))
+	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
 		return
 	}
 
-	genreID, err := uuid.Parse(r.PathValue("genre_id"))
+	req, err := decodeRequestBody[AddGenreToBookRequest](r)
 	if err != nil {
-		http.Error(w, "Invalid genre id", http.StatusBadRequest)
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	arg := repo.AddGenreToBookParams{
-		BookID:  bookID,
-		GenreID: genreID,
-	}
-
-	if err := h.repo.AddGenreToBook(r.Context(), arg); err != nil {
+	if err := h.repo.AddGenreToBook(r.Context(), req.ToParams(id)); err != nil {
 		http.Error(w, "Failed to add genre to book", http.StatusInternalServerError)
 		return
 	}
@@ -102,24 +91,19 @@ func (h *handler) AddGenreToBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) RemoveGenreFromBook(w http.ResponseWriter, r *http.Request) {
-	bookID, err := uuid.Parse(r.PathValue("book_id"))
+	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
 		return
 	}
 
-	genreID, err := uuid.Parse(r.PathValue("genre_id"))
+	req, err := decodeRequestBody[RemoveGenreFromBookRequest](r)
 	if err != nil {
-		http.Error(w, "Invalid genre id", http.StatusBadRequest)
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	arg := repo.RemoveGenreFromBookParams{
-		BookID:  bookID,
-		GenreID: genreID,
-	}
-
-	if err := h.repo.RemoveGenreFromBook(r.Context(), arg); err != nil {
+	if err := h.repo.RemoveGenreFromBook(r.Context(), req.ToParams(id)); err != nil {
 		http.Error(w, "Failed to add genre to book", http.StatusInternalServerError)
 		return
 	}

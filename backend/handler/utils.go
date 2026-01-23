@@ -14,3 +14,10 @@ func writeJson(w http.ResponseWriter, status int, data any) {
 		log.Println("Failed to encode response to json")
 	}
 }
+
+func decodeRequestBody[T any](r *http.Request) (T, error) {
+	var req T
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	return req, err
+}

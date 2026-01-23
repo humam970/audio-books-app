@@ -1,17 +1,22 @@
 package main
 
 import (
-	"bookserve/handler"
-	"bookserve/migrations"
-	"bookserve/repo"
 	"context"
 	"database/sql"
-	"log"
+
+	"bookserve/entities/author"
+	l "bookserve/logy"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"bookserve/handler"
+	"bookserve/migrations"
+	"bookserve/repo"
+
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -24,7 +29,10 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		defer db.Close()
+
+		defer func() {
+			_ = db.Close()
+		}()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -50,73 +58,116 @@ func main() {
 	queries := repo.New(pool)
 	h := handler.New(queries)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Status is available"))
+	r := chi.NewMux()
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	// r.Use(middleware.Logger)
+	r.Use(l.Middleware)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(60 * time.Second))
+
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("Status is available"))
 	})
 
-	mux.HandleFunc("POST   /authors", h.CreateAuthor)
-	mux.HandleFunc("GET    /authors", h.ListAuthors)
-	mux.HandleFunc("GET    /authors/{id}", h.GetAuthor)
-	mux.HandleFunc("PUT    /authors/{id}", h.UpdateAuthor)
-	mux.HandleFunc("DELETE /authors/{id}", h.DeleteAuthor)
+	// r.Route("/authors", func(r chi.Router) {
+	// 	r.Post("/", h.CreateAuthor)
+	// 	r.Get("/", h.ListAuthors)
+	// 	r.Get("/{id}", h.GetAuthor)
+	// 	r.Put("/{id}", h.UpdateAuthor)
+	// 	r.Delete("/{id}", h.DeleteAuthor)
+	// })
+	author.RegisterRoutes(r)
 
-	mux.HandleFunc("POST   /narrators", h.CreateNarrator)
-	mux.HandleFunc("GET    /narrators", h.ListNarrators)
-	mux.HandleFunc("GET    /narrators/{id}", h.GetNarrator)
-	mux.HandleFunc("PUT    /narrators/{id}", h.UpdateNarrator)
-	mux.HandleFunc("DELETE /narrators/{id}", h.DeleteNarrator)
+	r.Route("/narrators", func(r chi.Router) {
+		r.Post("/", h.CreateNarrator)
+		r.Get("/", h.ListNarrators)
+		r.Get("/{id}", h.GetNarrator)
+		r.Put("/{id}", h.UpdateNarrator)
+		r.Delete("/{id}", h.DeleteNarrator)
+	})
 
-	mux.HandleFunc("POST   /genres", h.CreateGenre)
-	mux.HandleFunc("GET    /genres", h.ListGenres)
-	mux.HandleFunc("GET    /genres/{id}", h.GetGenre)
-	mux.HandleFunc("DELETE /genres/{id}", h.DeleteGenre)
+	r.Route("/genres", func(r chi.Router) {
+		r.Post("/", h.CreateGenre)
+		r.Get("/", h.ListGenres)
+		r.Get("/{id}", h.GetGenre)
+		r.Delete("/{id}", h.DeleteGenre)
+	})
 
-	mux.HandleFunc("POST   /chapters", h.CreateChapter)
-	mux.HandleFunc("PUT    /chapters/{id}", h.UpdateChapter)
-	mux.HandleFunc("DELETE /chapters/{id}", h.DeleteChapter)
+	r.Route("/books", func(r chi.Router) {
+		r.Post("/", h.CreateBook)
+		r.Post("/{id}/chapters", h.CreateChapter)
+		r.Post("/{bookID}/authors/{authorID}", h.AddAuthorToBook)
+		r.Post("/{bookID}/genres/{genreID}", h.AddGenreToBook)
+		r.Post("/{bookID}/narrators/{narratorID}", h.AddNarratorToBook)
 
-	mux.HandleFunc("POST   /books", h.CreateBook)
-	mux.HandleFunc("GET    /books", h.ListBooks)
-	mux.HandleFunc("GET    /books/{id}/genres", h.ListGenresForBook)
-	mux.HandleFunc("GET    /books/{id}/chapters", h.ListChaptersForBook)
-	mux.HandleFunc("GET    /books/{id}", h.GetBook)
-	mux.HandleFunc("PUT    /books/{id}", h.UpdateBook)
-	mux.HandleFunc("DELETE /books/{id}", h.DeleteBook)
+		r.Get("/", h.ListBooks)
+		r.Get("/{id}", h.GetBook)
+		r.Get("/{id}/genres", h.ListGenresForBook)
+		r.Get("/{id}/chapters", h.ListChaptersForBook)
 
-	mux.HandleFunc("POST     /books/{bookID}/authors/{authorID}", h.AddAuthorToBook)
-	mux.HandleFunc("DELETE   /books/{bookID}/authors/{authorID}", h.RemoveAuthorFromBook)
-	mux.HandleFunc("POST     /books/{bookID}/genres/{genreID}", h.AddGenreToBook)
-	mux.HandleFunc("DELETE   /books/{bookID}/genres/{genreID}", h.RemoveGenreFromBook)
-	mux.HandleFunc("POST     /books/{bookID}/narrators/{narratorID}", h.AddNarratorToBook)
-	mux.HandleFunc("DELETE   /books/{bookID}/narrators/{narratorID}", h.RemoveNarratorFromBook)
+		r.Put("/{id}", h.UpdateBook)
+		r.Put("/{bookID}/chapters/{chapterID}", h.UpdateChapter)
 
+		r.Delete("/{id}", h.DeleteBook)
+		r.Delete("/{bookID}/chapters/{chapterID}", h.DeleteChapter)
+		r.Delete("/{bookID}/authors/{authorID}", h.RemoveAuthorFromBook)
+		r.Delete("/{bookID}/genres/{genreID}", h.RemoveGenreFromBook)
+		r.Delete("/{bookID}/narrators/{narratorID}", h.RemoveNarratorFromBook)
+	})
+
+	//nolint:exhaustruct
 	server := &http.Server{
 		Addr:         ":8080",
-		Handler:      mux,
+		Handler:      r,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
 	}
 
 	go func() {
-		log.Printf("Server started on port %s", server.Addr)
+		l.Global.Printf("Server started on port %s", server.Addr)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			l.Global.Err(err).Msg("listen: %s\n")
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
-	log.Println("Shutting down server...")
+	l.Global.Println("Shutting down server...")
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		l.Global.Fatal().Msgf("Server forced to shutdown: %v", err)
 	}
 
-	log.Println("Server exiting")
+	l.Global.Println("Server exiting")
 }
+
+// export const bookKeys = {
+// 	all: ["books"] as const,
+
+// 	// List and Search
+// 	lists: () => [...bookKeys.all, "list"] as const,
+// 	search: (query: string) => [...bookKeys.all, "search", query] as const,
+
+// 	// Specific Book Scopes
+// 	details: () => [...bookKeys.all, "detail"] as const,
+// 	detail: (id: string) => [...bookKeys.details(), id] as const,
+
+// 	// Sub-resource: Chapters
+// 	chapters: (bookId: string) =>
+// 		[...bookKeys.detail(bookId), "chapters"] as const,
+// 	chapter: (bookId: string, chapterId: string) =>
+// 		[...bookKeys.chapters(bookId), chapterId] as const,
+
+// 	// Sub-resource: Metadata (Authors, Genres, Narrators)
+// 	// We group these under "metadata" so you can invalidate all book relationships at once if needed
+// 	authors: (bookId: string) => [...bookKeys.detail(bookId), "authors"] as const,
+// 	genres: (bookId: string) => [...bookKeys.detail(bookId), "genres"] as const,
+// 	narrators: (bookId: string) =>
+// 		[...bookKeys.detail(bookId), "narrators"] as const,
+// };

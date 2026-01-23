@@ -5,59 +5,60 @@
 package repo
 
 import (
+	"time"
+
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Author struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
-	Bio  string    `json:"bio"`
+	ID   uuid.UUID
+	Name string
+	Bio  string
 }
 
 type Book struct {
-	ID              uuid.UUID          `json:"id"`
-	Title           string             `json:"title"`
-	DurationSeconds int32              `json:"duration_seconds"`
-	Rating          pgtype.Numeric     `json:"rating"`
-	ReleaseDate     pgtype.Date        `json:"release_date"`
-	CoverImageUrl   string             `json:"cover_image_url"`
-	AudioPreviewUrl string             `json:"audio_preview_url"`
-	IsAbridged      bool               `json:"is_abridged"`
-	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	ID              uuid.UUID
+	Title           string
+	DurationSeconds int32
+	Rating          float64
+	ReleaseDate     time.Time
+	CoverImageUrl   string
+	AudioPreviewUrl string
+	IsAbridged      bool
+	CreatedAt       time.Time
 }
 
 type BookAuthor struct {
-	BookID   uuid.UUID `json:"book_id"`
-	AuthorID uuid.UUID `json:"author_id"`
+	BookID   uuid.UUID
+	AuthorID uuid.UUID
 }
 
 type BookGenre struct {
-	BookID  uuid.UUID `json:"book_id"`
-	GenreID uuid.UUID `json:"genre_id"`
+	BookID  uuid.UUID
+	GenreID uuid.UUID
 }
 
 type BookNarrator struct {
-	BookID     uuid.UUID `json:"book_id"`
-	NarratorID uuid.UUID `json:"narrator_id"`
+	BookID     uuid.UUID
+	NarratorID uuid.UUID
 }
 
 type Chapter struct {
-	ID         uuid.UUID `json:"id"`
-	BookID     uuid.UUID `json:"book_id"`
-	Title      string    `json:"title"`
-	StartTime  int32     `json:"start_time"`
-	EndTime    int32     `json:"end_time"`
-	OrderIndex int32     `json:"order_index"`
+	ID         uuid.UUID
+	BookID     uuid.UUID
+	Title      string
+	StartTime  int32
+	EndTime    int32
+	OrderIndex int32
 }
 
 type Genre struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
+	ID   uuid.UUID
+	Name string
 }
 
 type Narrator struct {
-	ID   uuid.UUID   `json:"id"`
-	Name string      `json:"name"`
-	Bio  pgtype.Text `json:"bio"`
+	ID   uuid.UUID
+	Name string
+	Bio  *string
 }

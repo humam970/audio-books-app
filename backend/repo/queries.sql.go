@@ -7,9 +7,9 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addAuthorToBook = `-- name: AddAuthorToBook :exec
@@ -18,8 +18,8 @@ VALUES ($1, $2) ON CONFLICT DO NOTHING
 `
 
 type AddAuthorToBookParams struct {
-	BookID   uuid.UUID `json:"book_id"`
-	AuthorID uuid.UUID `json:"author_id"`
+	BookID   uuid.UUID
+	AuthorID uuid.UUID
 }
 
 func (q *Queries) AddAuthorToBook(ctx context.Context, arg AddAuthorToBookParams) error {
@@ -33,8 +33,8 @@ VALUES ($1, $2) ON CONFLICT DO NOTHING
 `
 
 type AddGenreToBookParams struct {
-	BookID  uuid.UUID `json:"book_id"`
-	GenreID uuid.UUID `json:"genre_id"`
+	BookID  uuid.UUID
+	GenreID uuid.UUID
 }
 
 func (q *Queries) AddGenreToBook(ctx context.Context, arg AddGenreToBookParams) error {
@@ -48,8 +48,8 @@ VALUES ($1, $2) ON CONFLICT DO NOTHING
 `
 
 type AddNarratorToBookParams struct {
-	BookID     uuid.UUID `json:"book_id"`
-	NarratorID uuid.UUID `json:"narrator_id"`
+	BookID     uuid.UUID
+	NarratorID uuid.UUID
 }
 
 func (q *Queries) AddNarratorToBook(ctx context.Context, arg AddNarratorToBookParams) error {
@@ -64,8 +64,8 @@ RETURNING id, name, bio
 `
 
 type CreateAuthorParams struct {
-	Name string `json:"name"`
-	Bio  string `json:"bio"`
+	Name string
+	Bio  string
 }
 
 func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Author, error) {
@@ -98,13 +98,13 @@ RETURNING id, title, duration_seconds, rating, release_date, cover_image_url, au
 `
 
 type CreateBookParams struct {
-	Title           string         `json:"title"`
-	DurationSeconds int32          `json:"duration_seconds"`
-	Rating          pgtype.Numeric `json:"rating"`
-	ReleaseDate     pgtype.Date    `json:"release_date"`
-	CoverImageUrl   string         `json:"cover_image_url"`
-	AudioPreviewUrl string         `json:"audio_preview_url"`
-	IsAbridged      bool           `json:"is_abridged"`
+	Title           string
+	DurationSeconds int32
+	Rating          float64
+	ReleaseDate     time.Time
+	CoverImageUrl   string
+	AudioPreviewUrl string
+	IsAbridged      bool
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -141,11 +141,11 @@ RETURNING id, book_id, title, start_time, end_time, order_index
 `
 
 type CreateChapterParams struct {
-	BookID     uuid.UUID `json:"book_id"`
-	Title      string    `json:"title"`
-	StartTime  int32     `json:"start_time"`
-	EndTime    int32     `json:"end_time"`
-	OrderIndex int32     `json:"order_index"`
+	BookID     uuid.UUID
+	Title      string
+	StartTime  int32
+	EndTime    int32
+	OrderIndex int32
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -190,8 +190,8 @@ RETURNING id, name, bio
 `
 
 type CreateNarratorParams struct {
-	Name string      `json:"name"`
-	Bio  pgtype.Text `json:"bio"`
+	Name string
+	Bio  *string
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -274,17 +274,17 @@ LIMIT 1
 `
 
 type GetBookRow struct {
-	ID              uuid.UUID          `json:"id"`
-	Title           string             `json:"title"`
-	DurationSeconds int32              `json:"duration_seconds"`
-	Rating          pgtype.Numeric     `json:"rating"`
-	ReleaseDate     pgtype.Date        `json:"release_date"`
-	CoverImageUrl   string             `json:"cover_image_url"`
-	AudioPreviewUrl string             `json:"audio_preview_url"`
-	IsAbridged      bool               `json:"is_abridged"`
-	CreatedAt       pgtype.Timestamptz `json:"created_at"`
-	Authors         []string           `json:"authors"`
-	Narrators       []string           `json:"narrators"`
+	ID              uuid.UUID
+	Title           string
+	DurationSeconds int32
+	Rating          float64
+	ReleaseDate     time.Time
+	CoverImageUrl   string
+	AudioPreviewUrl string
+	IsAbridged      bool
+	CreatedAt       time.Time
+	Authors         []string
+	Narrators       []string
 }
 
 func (q *Queries) GetBook(ctx context.Context, id uuid.UUID) (GetBookRow, error) {
@@ -394,12 +394,12 @@ ORDER BY b.release_date DESC
 `
 
 type ListBooksRow struct {
-	ID            uuid.UUID      `json:"id"`
-	Title         string         `json:"title"`
-	ReleaseDate   pgtype.Date    `json:"release_date"`
-	CoverImageUrl string         `json:"cover_image_url"`
-	Rating        pgtype.Numeric `json:"rating"`
-	Authors       []string       `json:"authors"`
+	ID            uuid.UUID
+	Title         string
+	ReleaseDate   time.Time
+	CoverImageUrl string
+	Rating        float64
+	Authors       []string
 }
 
 func (q *Queries) ListBooks(ctx context.Context) ([]ListBooksRow, error) {
@@ -516,8 +516,8 @@ WHERE book_id = $1 AND author_id = $2
 `
 
 type RemoveAuthorFromBookParams struct {
-	BookID   uuid.UUID `json:"book_id"`
-	AuthorID uuid.UUID `json:"author_id"`
+	BookID   uuid.UUID
+	AuthorID uuid.UUID
 }
 
 func (q *Queries) RemoveAuthorFromBook(ctx context.Context, arg RemoveAuthorFromBookParams) error {
@@ -531,8 +531,8 @@ WHERE book_id = $1 AND genre_id = $2
 `
 
 type RemoveGenreFromBookParams struct {
-	BookID  uuid.UUID `json:"book_id"`
-	GenreID uuid.UUID `json:"genre_id"`
+	BookID  uuid.UUID
+	GenreID uuid.UUID
 }
 
 func (q *Queries) RemoveGenreFromBook(ctx context.Context, arg RemoveGenreFromBookParams) error {
@@ -546,8 +546,8 @@ WHERE book_id = $1 AND narrator_id = $2
 `
 
 type RemoveNarratorFromBookParams struct {
-	BookID     uuid.UUID `json:"book_id"`
-	NarratorID uuid.UUID `json:"narrator_id"`
+	BookID     uuid.UUID
+	NarratorID uuid.UUID
 }
 
 func (q *Queries) RemoveNarratorFromBook(ctx context.Context, arg RemoveNarratorFromBookParams) error {
@@ -563,9 +563,9 @@ RETURNING id, name, bio
 `
 
 type UpdateAuthorParams struct {
-	Name string    `json:"name"`
-	Bio  string    `json:"bio"`
-	ID   uuid.UUID `json:"id"`
+	Name string
+	Bio  string
+	ID   uuid.UUID
 }
 
 func (q *Queries) UpdateAuthor(ctx context.Context, arg UpdateAuthorParams) (Author, error) {
@@ -586,10 +586,10 @@ RETURNING id, title, duration_seconds, rating, release_date, cover_image_url, au
 `
 
 type UpdateBookParams struct {
-	Title      string         `json:"title"`
-	Rating     pgtype.Numeric `json:"rating"`
-	IsAbridged bool           `json:"is_abridged"`
-	ID         uuid.UUID      `json:"id"`
+	Title      string
+	Rating     float64
+	IsAbridged bool
+	ID         uuid.UUID
 }
 
 func (q *Queries) UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error) {
@@ -626,11 +626,11 @@ RETURNING id, book_id, title, start_time, end_time, order_index
 `
 
 type UpdateChapterParams struct {
-	Title      string    `json:"title"`
-	StartTime  int32     `json:"start_time"`
-	EndTime    int32     `json:"end_time"`
-	OrderIndex int32     `json:"order_index"`
-	ID         uuid.UUID `json:"id"`
+	Title      string
+	StartTime  int32
+	EndTime    int32
+	OrderIndex int32
+	ID         uuid.UUID
 }
 
 func (q *Queries) UpdateChapter(ctx context.Context, arg UpdateChapterParams) (Chapter, error) {
@@ -661,9 +661,9 @@ RETURNING id, name, bio
 `
 
 type UpdateNarratorParams struct {
-	Name string      `json:"name"`
-	Bio  pgtype.Text `json:"bio"`
-	ID   uuid.UUID   `json:"id"`
+	Name string
+	Bio  *string
+	ID   uuid.UUID
 }
 
 func (q *Queries) UpdateNarrator(ctx context.Context, arg UpdateNarratorParams) (Narrator, error) {

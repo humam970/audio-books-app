@@ -2,7 +2,7 @@ version: "2"
 
 sql:
   - engine: "postgresql"
-    schema: "./migrations/00001_schema.sql"
+    schema: "./migrations"
     queries: "./queries.sql"
     gen:
       go:
@@ -10,11 +10,24 @@ sql:
         out: "./repo"
         sql_package: "pgx/v5"
         sql_driver: "github.com/jackc/pgx/v5"
-        emit_json_tags: true
+        emit_json_tags: false
         json_tags_case_style: "snake"
+        emit_pointers_for_null_types: true
 
         overrides:
           - db_type: "uuid"
             go_type:
               import: "github.com/google/uuid"
               type: "UUID"
+
+          - db_type: "pg_catalog.numeric"
+            go_type: "float64"
+
+          - db_type: "decimal"
+            go_type: "float64"
+
+          - db_type: "timestamptz"
+            go_type: "time.Time"
+
+          - db_type: "date"
+            go_type: "time.Time"

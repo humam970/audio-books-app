@@ -1,26 +1,38 @@
 package handler
 
 import (
-	"bookserve/repo"
+	l "bookserve/logy"
 	"database/sql"
-	"encoding/json"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
 func (h *handler) CreateAuthor(w http.ResponseWriter, r *http.Request) {
-	arg := repo.CreateAuthorParams{}
-	if err := json.NewDecoder(r.Body).Decode(&arg); err != nil {
+	req, err := decodeRequestBody[CreateAuthorRequest](r)
+	if err != nil {
+		l.Authors.Warn().
+			Err(err).
+			Msg("decode_request_body_failed")
+
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	author, err := h.repo.CreateAuthor(r.Context(), arg)
+	author, err := h.repo.CreateAuthor(r.Context(), req.ToParams())
 	if err != nil {
+		l.Authors.Error().
+			Err(err).
+			Str("author_name", req.Name).
+			Msg("database_insert_failed")
+
 		http.Error(w, "Fialed to add author to db", http.StatusInternalServerError)
 		return
 	}
+
+	l.Authors.Info().
+		Str("id", author.ID.String()).
+		Msg("author_created")
 
 	writeJson(w, http.StatusCreated, author)
 }
@@ -28,6 +40,10 @@ func (h *handler) CreateAuthor(w http.ResponseWriter, r *http.Request) {
 func (h *handler) GetAuthor(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
+		l.Authors.Warn().
+			Err(err).
+			Msg("invalid_author_id")
+
 		http.Error(w, "Invalid author id", http.StatusBadRequest)
 		return
 	}
@@ -35,13 +51,26 @@ func (h *handler) GetAuthor(w http.ResponseWriter, r *http.Request) {
 	author, err := h.repo.GetAuthor(r.Context(), id)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			l.Authors.Warn().
+				Err(err).
+				Msg("aurhor_not_found")
+
 			http.Error(w, "Aurhor not found", http.StatusNotFound)
 			return
 		}
 
+		l.Authors.Error().
+			Err(err).
+			Str("author_id", id.String()).
+			Msg("database_fetching_failed")
+
 		http.Error(w, "Failed to get author", http.StatusInternalServerError)
 		return
 	}
+
+	l.Authors.Info().
+		Str("id", author.ID.String()).
+		Msg("author_returned")
 
 	writeJson(w, http.StatusOK, author)
 }
@@ -62,15 +91,14 @@ func (h *handler) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid author id", http.StatusBadRequest)
 		return
 	}
-	_ = id
 
-	arg := repo.UpdateAuthorParams{}
-	if err := json.NewDecoder(r.Body).Decode(&arg); err != nil {
+	req, err := decodeRequestBody[UpdateAuthorRequest](r)
+	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	author, err := h.repo.UpdateAuthor(r.Context(), arg)
+	author, err := h.repo.UpdateAuthor(r.Context(), req.ToParams(id))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "Author not found", http.StatusNotFound)
@@ -100,14 +128,19 @@ func (h *handler) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) AddAuthorToBook(w http.ResponseWriter, r *http.Request) {
-	arg := repo.AddAuthorToBookParams{}
-	if err := json.NewDecoder(r.Body).Decode(&arg); err != nil {
+	id, err := uuid.Parse(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "Invalid book id", http.StatusBadRequest)
+		return
+	}
+
+	req, err := decodeRequestBody[AddAuthorToBookRequest](r)
+	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	err := h.repo.AddAuthorToBook(r.Context(), arg)
-	if err != nil {
+	if err := h.repo.AddAuthorToBook(r.Context(), req.ToParams(id)); err != nil {
 		http.Error(w, "Failed to add author to book", http.StatusInternalServerError)
 		return
 	}
@@ -116,13 +149,19 @@ func (h *handler) AddAuthorToBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) RemoveAuthorFromBook(w http.ResponseWriter, r *http.Request) {
-	arg := repo.RemoveAuthorFromBookParams{}
-	if err := json.NewDecoder(r.Body).Decode(&arg); err != nil {
+	id, err := uuid.Parse(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "Invalid book id", http.StatusBadRequest)
+		return
+	}
+
+	req, err := decodeRequestBody[RemoveAuthorFromBookRequest](r)
+	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.repo.RemoveAuthorFromBook(r.Context(), arg); err != nil {
+	if err := h.repo.RemoveAuthorFromBook(r.Context(), req.ToParams(id)); err != nil {
 		http.Error(w, "Failed to remove author from book", http.StatusInternalServerError)
 		return
 	}

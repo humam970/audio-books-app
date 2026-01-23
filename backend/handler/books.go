@@ -1,22 +1,26 @@
 package handler
 
 import (
-	"bookserve/repo"
 	"database/sql"
-	"encoding/json"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
 func (h *handler) CreateBook(w http.ResponseWriter, r *http.Request) {
-	arg := repo.CreateBookParams{}
-	if err := json.NewDecoder(r.Body).Decode(&arg); err != nil {
+	req, err := decodeRequestBody[CreateBookRequest](r)
+	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	book, err := h.repo.CreateBook(r.Context(), arg)
+	params, err := req.ToParams()
+	if err != nil {
+		http.Error(w, "Invalid request data", http.StatusBadRequest)
+		return
+	}
+
+	book, err := h.repo.CreateBook(r.Context(), params)
 	if err != nil {
 		http.Error(w, "Failed to create book", http.StatusInternalServerError)
 		return
@@ -35,11 +39,11 @@ func (h *handler) GetBook(w http.ResponseWriter, r *http.Request) {
 	book, err := h.repo.GetBook(r.Context(), id)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			http.Error(w, "Aurhor not found", http.StatusNotFound)
+			http.Error(w, "Book not found", http.StatusNotFound)
 			return
 		}
 
-		http.Error(w, "Failed to get author", http.StatusInternalServerError)
+		http.Error(w, "Failed to get book", http.StatusInternalServerError)
 		return
 	}
 
@@ -62,15 +66,14 @@ func (h *handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
 		return
 	}
-	_ = id
 
-	arg := repo.UpdateBookParams{}
-	if err := json.NewDecoder(r.Body).Decode(&arg); err != nil {
+	req, err := decodeRequestBody[UpdateBookRequest](r)
+	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	book, err := h.repo.UpdateBook(r.Context(), arg)
+	book, err := h.repo.UpdateBook(r.Context(), req.ToParams(id))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "Book not found", http.StatusNotFound)

@@ -1,22 +1,26 @@
 package handler
 
 import (
-	"bookserve/repo"
 	"database/sql"
-	"encoding/json"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
 func (h *handler) CreateChapter(w http.ResponseWriter, r *http.Request) {
-	arg := repo.CreateChapterParams{}
-	if err := json.NewDecoder(r.Body).Decode(&arg); err != nil {
+	id, err := uuid.Parse(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "Invalid book id", http.StatusBadRequest)
+		return
+	}
+
+	req, err := decodeRequestBody[CreateChapterRequest](r)
+	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	chapter, err := h.repo.CreateChapter(r.Context(), arg)
+	chapter, err := h.repo.CreateChapter(r.Context(), req.ToParams(id))
 	if err != nil {
 		http.Error(w, "Failed to create chapter", http.StatusInternalServerError)
 		return
@@ -41,21 +45,29 @@ func (h *handler) ListChaptersForBook(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, chapters)
 }
 
+/*
+decide if i should use the order index with the book id
+
+	/books/{book_id}/chapters/{chapter_id}
+
+or if i should i use the chapter number instead
+
+	/books/{book_id}/chapters/{chapter_number}
+*/
 func (h *handler) UpdateChapter(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "Invalid chapter id", http.StatusBadRequest)
+		http.Error(w, "Invalid book id", http.StatusBadRequest)
 		return
 	}
-	_ = id
 
-	arg := repo.UpdateChapterParams{}
-	if err := json.NewDecoder(r.Body).Decode(&arg); err != nil {
+	req, err := decodeRequestBody[UpdateChapterRequest](r)
+	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
 		return
 	}
 
-	chapter, err := h.repo.UpdateChapter(r.Context(), arg)
+	chapter, err := h.repo.UpdateChapter(r.Context(), req.ToParams(id))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			http.Error(w, "Chapter not found", http.StatusNotFound)

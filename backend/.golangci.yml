@@ -1,0 +1,21 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - zerologlint
+    - bodyclose
+    - errcheck
+    - errchkjson
+    - exhaustive
+    - exhaustruct
+    - musttag
+    - nilerr
+    - reassign
+    - rowserrcheck
+    - sqlclosecheck
+    - unused
+    # - ginkgolinter
+    # - unparam
+    # - unconvert
+    # - tagalign
