@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (h *handler) CreateAuthor(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateAuthor(w http.ResponseWriter, r *http.Request) {
 	req, err := decodeRequestBody[CreateAuthorRequest](r)
 	if err != nil {
 		l.Authors.Warn().
@@ -37,12 +37,12 @@ func (h *handler) CreateAuthor(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusCreated, author)
 }
 
-func (h *handler) GetAuthor(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetAuthor(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		l.Authors.Warn().
 			Err(err).
-			Msg("invalid_author_id")
+			Msg("[Invalid Author ID]")
 
 		http.Error(w, "Invalid author id", http.StatusBadRequest)
 		return
@@ -75,7 +75,7 @@ func (h *handler) GetAuthor(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, author)
 }
 
-func (h *handler) ListAuthors(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListAuthors(w http.ResponseWriter, r *http.Request) {
 	authors, err := h.repo.ListAuthors(r.Context())
 	if err != nil {
 		http.Error(w, "Failed to get authors", http.StatusInternalServerError)
@@ -85,7 +85,7 @@ func (h *handler) ListAuthors(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, authors)
 }
 
-func (h *handler) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid author id", http.StatusBadRequest)
@@ -112,7 +112,7 @@ func (h *handler) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, author)
 }
 
-func (h *handler) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid author id", http.StatusBadRequest)
@@ -127,7 +127,7 @@ func (h *handler) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *handler) AddAuthorToBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) AddAuthorToBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -148,7 +148,7 @@ func (h *handler) AddAuthorToBook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h *handler) RemoveAuthorFromBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RemoveAuthorFromBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)

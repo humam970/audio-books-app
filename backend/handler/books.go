@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (h *handler) CreateBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 	req, err := decodeRequestBody[CreateBookRequest](r)
 	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
@@ -29,7 +29,7 @@ func (h *handler) CreateBook(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusCreated, book)
 }
 
-func (h *handler) GetBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -50,7 +50,7 @@ func (h *handler) GetBook(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, book)
 }
 
-func (h *handler) ListBooks(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListBooks(w http.ResponseWriter, r *http.Request) {
 	books, err := h.repo.ListBooks(r.Context())
 	if err != nil {
 		http.Error(w, "Failed to get books", http.StatusInternalServerError)
@@ -60,7 +60,7 @@ func (h *handler) ListBooks(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, books)
 }
 
-func (h *handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -87,7 +87,7 @@ func (h *handler) UpdateBook(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, book)
 }
 
-func (h *handler) DeleteBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)

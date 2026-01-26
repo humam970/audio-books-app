@@ -1,34 +1,21 @@
-import { ApiUrl } from "../consts";
-import type { Genre } from "../models/models";
-import type { CreateGenreRequest } from "../models/requests";
-import { request } from "./_utils";
+import api from "./index";
+import type { CreateGenreRequest, Genre } from "../models/genre";
 
-export const createGenre = async (
-	genreData: CreateGenreRequest,
-): Promise<Genre> => {
-	const url = ApiUrl + "/genres";
-	const response = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(genreData),
-	});
+export async function createGenre(genreData: CreateGenreRequest): Promise<Genre> {
+    const res = await api.post<Genre>("/genres", genreData);
+    return res.data;
+}
 
-	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({}));
-		throw new Error(
-			errorData.message || `Error ${response.status}: Failed to create book`,
-		);
-	}
+export async function listGenres(): Promise<Genre[]> {
+    const res = await api.get<Genre[]>("/genres");
+    return res.data;
+}
 
-	return await response.json();
-};
+export async function getGenre(id: string): Promise<Genre> {
+    const res = await api.get<Genre>(`/genres/${id}`);
+    return res.data;
+}
 
-export const getGenres = async (): Promise<Genre[]> => {
-	return request<Genre[]>("/genres");
-};
-
-export const getGenreById = async (id: string): Promise<Genre> => {
-	return request<Genre>(`/genres/${id}`);
-};
+export async function deleteGenre(id: string): Promise<void> {
+    await api.delete(`/genres/${id}`);
+}

@@ -180,21 +180,20 @@ type CreateBookRequest struct {
 }
 
 func (r *CreateBookRequest) ToParams() (repo.CreateBookParams, error) {
-	params := repo.CreateBookParams{
-		Title:           r.Title,
-		DurationSeconds: r.DurationSeconds,
-		Rating:          r.Rating,
-		CoverImageUrl:   r.CoverImageUrl,
-		AudioPreviewUrl: r.AudioPreviewUrl,
-		IsAbridged:      r.IsAbridged,
-	}
-
 	releaseData, err := time.Parse(time.DateOnly, r.ReleaseDate)
 	if err != nil {
 		return repo.CreateBookParams{}, err
 	}
 
-	params.ReleaseDate = releaseData
+	params := repo.CreateBookParams{
+		Title:           r.Title,
+		DurationSeconds: r.DurationSeconds,
+		Rating:          r.Rating,
+		ReleaseDate:     releaseData,
+		CoverImageUrl:   r.CoverImageUrl,
+		AudioPreviewUrl: r.AudioPreviewUrl,
+		IsAbridged:      r.IsAbridged,
+	}
 
 	return params, nil
 }

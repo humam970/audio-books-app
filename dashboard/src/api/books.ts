@@ -1,34 +1,63 @@
-import { ApiUrl } from "../consts";
-import type { CreateBookRequest } from "../models/requests";
-import type { Book } from "./../models/models";
-import { request } from "./_utils";
+import api from "./index";
+import type {
+    AddAuthorToBookRequest,
+    AddAuthorToBookResponse,
+    AddGenreToBookRequest,
+    AddGenreToBookResponse,
+    AddNarratorToBookRequest,
+    AddNarratorToBookResponse,
+    Book,
+    CreateBookRequest,
+    UpdateBookRequest,
+} from "../models/book";
 
-export const createBook = async (
-	bookData: CreateBookRequest,
-): Promise<Book> => {
-	const url = `${ApiUrl}/books`;
-	const response = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(bookData),
-	});
+export async function createBook(req: CreateBookRequest): Promise<Book> {
+    const res = await api.post<Book>("/books", req);
+    return res.data;
+}
 
-	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({}));
-		throw new Error(
-			errorData.message || `Error ${response.status}: Failed to create book`,
-		);
-	}
+export async function listBooks(): Promise<Book[]> {
+    const res = await api.get<Book[]>("/books");
+    return res.data;
+}
 
-	return await response.json();
-};
+export async function getBook(id: string): Promise<Book> {
+    const res = await api.get<Book>(`/books/${id}`);
+    return res.data;
+}
 
-export const getBooks = async (): Promise<Book[]> => {
-	return request<Book[]>("/books");
-};
+export async function updateBook(id: string, req: UpdateBookRequest): Promise<Book> {
+    const res = await api.put<Book>(`/books/${id}`, req);
+    return res.data;
+}
 
-export const getBookById = async (id: string): Promise<Book> => {
-	return request<Book>(`/books/${id}`);
-};
+export async function deleteBook(id: string): Promise<void> {
+    await api.delete(`/books/${id}`);
+}
+
+export async function addAuthorToBook(id: string, req: AddAuthorToBookRequest): Promise<AddAuthorToBookResponse> {
+    const res = await api.post<AddAuthorToBookResponse>(`/books/${id}/authors`, req);
+    return res.data;
+}
+
+export async function addGenreToBook(id: string, req: AddGenreToBookRequest): Promise<AddGenreToBookResponse> {
+    const res = await api.post<AddGenreToBookResponse>(`/books/${id}/genres`, req);
+    return res.data;
+}
+
+export async function addNarratorToBook(id: string, req: AddNarratorToBookRequest): Promise<AddNarratorToBookResponse> {
+    const res = await api.post<AddNarratorToBookResponse>(`/books/${id}/narrators`, req);
+    return res.data;
+}
+
+export async function removeAuthorFromBook(bookId: string, authorId: string): Promise<void> {
+    await api.delete(`/books/${bookId}/authors/${authorId}`);
+}
+
+export async function removeNarratorFromBook(bookId: string, narratorId: string): Promise<void> {
+    await api.delete(`/books/${bookId}/narrators/${narratorId}`);
+}
+
+export async function removeGenreFromBook(bookId: string, genreId: string): Promise<void> {
+    await api.delete(`/books/${bookId}/genres/${genreId}`);
+}

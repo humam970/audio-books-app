@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (h *handler) CreateGenre(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateGenre(w http.ResponseWriter, r *http.Request) {
 	req, err := decodeRequestBody[CreateGenreRequest](r)
 	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
@@ -23,7 +23,7 @@ func (h *handler) CreateGenre(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusCreated, genre)
 }
 
-func (h *handler) GetGenre(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetGenre(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid genre id", http.StatusBadRequest)
@@ -44,7 +44,7 @@ func (h *handler) GetGenre(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, genre)
 }
 
-func (h *handler) ListGenres(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListGenres(w http.ResponseWriter, r *http.Request) {
 	genres, err := h.repo.ListGenres(r.Context())
 	if err != nil {
 		http.Error(w, "Failed to list genres", http.StatusInternalServerError)
@@ -54,7 +54,7 @@ func (h *handler) ListGenres(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, genres)
 }
 
-func (h *handler) DeleteGenre(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteGenre(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid genre id", http.StatusBadRequest)
@@ -69,7 +69,7 @@ func (h *handler) DeleteGenre(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *handler) AddGenreToBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) AddGenreToBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -90,7 +90,7 @@ func (h *handler) AddGenreToBook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h *handler) RemoveGenreFromBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RemoveGenreFromBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -111,7 +111,7 @@ func (h *handler) RemoveGenreFromBook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *handler) ListGenresForBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListGenresForBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)

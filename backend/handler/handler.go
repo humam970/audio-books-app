@@ -4,12 +4,16 @@ import (
 	"bookserve/repo"
 )
 
-type handler struct {
+type Handler struct {
 	repo *repo.Queries
 }
 
-func New(queries *repo.Queries) *handler {
-	return &handler{
+func New(queries *repo.Queries) *Handler {
+	if queries == nil {
+		panic("Cannot create new handler with nil queries")
+	}
+
+	return &Handler{
 		repo: queries,
 	}
 }

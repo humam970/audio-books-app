@@ -1,34 +1,26 @@
-import { ApiUrl } from "../consts";
-import type { CreateAuthorRequest } from "../models/requests";
-import type { Author } from "./../models/models";
-import { request } from "./_utils";
+import api from "./index";
+import type { Author, CreateAuthorRequest, UpdateAuthorRequest } from "../models/author";
 
-export const createAuthor = async (
-	authorData: CreateAuthorRequest,
-): Promise<Author> => {
-	const url = ApiUrl + "/authors";
-	const response = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(authorData),
-	});
+export async function createAuthor(req: CreateAuthorRequest): Promise<Author> {
+    const res = await api.post<Author>("/authors", req);
+    return res.data;
+}
 
-	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({}));
-		throw new Error(
-			errorData.message || `Error ${response.status}: Failed to create book`,
-		);
-	}
+export async function listAuthors(): Promise<Author[]> {
+    const res = await api.get<Author[]>("/authors");
+    return res.data;
+}
 
-	return await response.json();
-};
+export async function getAuthor(id: string): Promise<Author> {
+    const res = await api.get<Author>(`/authors/${id}`);
+    return res.data;
+}
 
-export const getAuthors = async (): Promise<Author[]> => {
-	return request<Author[]>("/authors");
-};
+export async function updateAuthor(id: string, req: UpdateAuthorRequest): Promise<Author> {
+    const res = await api.put<Author>(`/authors/${id}`, req);
+    return res.data;
+}
 
-export const getAuthorById = async (id: string): Promise<Author> => {
-	return request<Author>(`/authors/${id}`);
-};
+export async function deleteAuthor(id: string): Promise<void> {
+    await api.delete(`/authors/${id}`);
+}

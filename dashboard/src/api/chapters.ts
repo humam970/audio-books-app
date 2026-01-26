@@ -1,34 +1,26 @@
-import { ApiUrl } from "../consts";
-import type { Chapter } from "../models/models";
-import type { CreateChapterRequest } from "../models/requests";
-import { request } from "./_utils";
+import api from "./index";
+import type { Chapter, CreateChapterRequest, UpdateChapterRequest } from "../models/chapter";
 
-export const createChapter = async (
-	genreData: CreateChapterRequest,
-): Promise<Chapter> => {
-	const url = ApiUrl + "/chapters";
-	const response = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(genreData),
-	});
+export async function createChapter(genreData: CreateChapterRequest): Promise<Chapter> {
+    const res = await api.post<Chapter>("/chapters", genreData);
+    return res.data;
+}
 
-	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({}));
-		throw new Error(
-			errorData.message || `Error ${response.status}: Failed to create book`,
-		);
-	}
+export async function listChapters(): Promise<Chapter[]> {
+    const res = await api.get<Chapter[]>("/chapters");
+    return res.data;
+}
 
-	return await response.json();
-};
+export async function getChapter(id: string): Promise<Chapter> {
+    const res = await api.get<Chapter>(`/chapters/${id}`);
+    return res.data;
+}
 
-export const getChapters = async (): Promise<Chapter[]> => {
-	return request<Chapter[]>("/chapters");
-};
+export async function updateChapter(id: string, updateData: UpdateChapterRequest): Promise<Chapter> {
+    const res = await api.put<Chapter>(`/chapters/${id}`, updateData);
+    return res.data;
+}
 
-export const getChapterById = async (id: string): Promise<Chapter> => {
-	return request<Chapter>(`/chapters/${id}`);
-};
+export async function deleteChapter(id: string): Promise<void> {
+    await api.delete(`/chapters/${id}`);
+}

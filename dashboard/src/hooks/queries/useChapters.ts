@@ -1,30 +1,53 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { chapterKeys } from "./keys";
-import { createChapter, getChapterById, getChapters } from "../../api/chapters";
+import { createChapter, deleteChapter, getChapter, listChapters, updateChapter } from "../../api/chapters";
+import type { UpdateChapterRequest } from "@/models/chapter";
 
 export function useCreateChapter() {
-	const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: createChapter,
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: chapterKeys.lists() });
-		},
-	});
+    return useMutation({
+        mutationFn: createChapter,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: chapterKeys.lists() });
+        },
+    });
 }
 
-export function useChapters() {
-	return useQuery({
-		queryKey: chapterKeys.lists(),
-		queryFn: getChapters,
-		staleTime: 1000 * 60 * 5,
-	});
+export function useListChapters() {
+    return useQuery({
+        queryKey: chapterKeys.lists(),
+        queryFn: listChapters,
+        staleTime: 1000 * 60 * 5,
+    });
 }
 
-export function useChapter(id: string) {
-	return useQuery({
-		queryKey: chapterKeys.detail(id),
-		queryFn: () => getChapterById(id),
-		enabled: !!id,
-	});
+export function useGetChapter(id: string) {
+    return useQuery({
+        queryKey: chapterKeys.detail(id),
+        queryFn: () => getChapter(id),
+        enabled: !!id,
+    });
+}
+
+export function useUpdateChapter() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, req }: { id: string; req: UpdateChapterRequest }) => updateChapter(id, req),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: chapterKeys.lists() });
+        },
+    });
+}
+
+export function useDeleteChapter() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => deleteChapter(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: chapterKeys.lists() });
+        },
+    });
 }

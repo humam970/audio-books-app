@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (h *handler) CreateChapter(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateChapter(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -29,7 +29,7 @@ func (h *handler) CreateChapter(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusCreated, chapter)
 }
 
-func (h *handler) ListChaptersForBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListChaptersForBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -54,7 +54,7 @@ or if i should i use the chapter number instead
 
 	/books/{book_id}/chapters/{chapter_number}
 */
-func (h *handler) UpdateChapter(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateChapter(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -81,7 +81,7 @@ func (h *handler) UpdateChapter(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, chapter)
 }
 
-func (h *handler) DeleteChapter(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteChapter(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid chapter id", http.StatusBadRequest)

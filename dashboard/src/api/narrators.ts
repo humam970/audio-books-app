@@ -1,34 +1,26 @@
-import { ApiUrl } from "../consts";
-import type { Narrator } from "../models/models";
-import type { CreateNarratorRequest } from "../models/requests";
-import { request } from "./_utils";
+import type { CreateNarratorRequest, Narrator, UpdateNarratorRequest } from "../models/narrator";
+import api from "./index";
 
-export const createNarrator = async (
-	genreData: CreateNarratorRequest,
-): Promise<Narrator> => {
-	const url = ApiUrl + "/narrators";
-	const response = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(genreData),
-	});
+export async function createNarrator(genreData: CreateNarratorRequest): Promise<Narrator> {
+    const res = await api.post<Narrator>("/narrators", genreData);
+    return res.data;
+}
 
-	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({}));
-		throw new Error(
-			errorData.message || `Error ${response.status}: Failed to create book`,
-		);
-	}
+export async function listNarrators(): Promise<Narrator[]> {
+    const res = await api.get<Narrator[]>("/narrators");
+    return res.data;
+}
 
-	return await response.json();
-};
+export async function getNarrator(id: string): Promise<Narrator> {
+    const res = await api.get<Narrator>(`/narrators/${id}`);
+    return res.data;
+}
 
-export const getNarrators = async (): Promise<Narrator[]> => {
-	return request<Narrator[]>("/narrators");
-};
+export async function updateNarrator(id: string, updateData: UpdateNarratorRequest): Promise<Narrator> {
+    const res = await api.put<Narrator>(`/narrators/${id}`, updateData);
+    return res.data;
+}
 
-export const getNarratorById = async (id: string): Promise<Narrator> => {
-	return request<Narrator>(`/narrators/${id}`);
-};
+export async function deleteNarrator(id: string): Promise<void> {
+    await api.delete(`/narrators/${id}`);
+}

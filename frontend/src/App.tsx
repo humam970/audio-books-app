@@ -1,13 +1,8 @@
-import Header from "./layouts/header";
-import Main from "./layouts/main";
+// import Header from "./layouts/header";
+// import Main from "./layouts/main";
 
 function App() {
-	return (
-		<>
-			<Header />
-			<Main />
-		</>
-	);
+	return <></>;
 }
 
 export default App;

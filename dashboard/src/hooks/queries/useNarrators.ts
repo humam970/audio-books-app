@@ -1,34 +1,53 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { narratorKeys } from "./keys";
-import {
-	createNarrator,
-	getNarratorById,
-	getNarrators,
-} from "../../api/narrators";
+import { authorKeys } from "./keys";
+import { createNarrator, deleteNarrator, getNarrator, listNarrators, updateNarrator } from "../../api/narrators";
+import type { UpdateNarratorRequest } from "@/models/narrator";
 
 export function useCreateNarrator() {
-	const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: createNarrator,
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: narratorKeys.lists() });
-		},
-	});
+    return useMutation({
+        mutationFn: createNarrator,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: authorKeys.lists() });
+        },
+    });
 }
 
-export function useNarrators() {
-	return useQuery({
-		queryKey: narratorKeys.lists(),
-		queryFn: getNarrators,
-		staleTime: 1000 * 60 * 5,
-	});
+export function useListNarrators() {
+    return useQuery({
+        queryKey: authorKeys.lists(),
+        queryFn: listNarrators,
+        staleTime: 1000 * 60 * 5,
+    });
 }
 
-export function useNarrator(id: string) {
-	return useQuery({
-		queryKey: narratorKeys.detail(id),
-		queryFn: () => getNarratorById(id),
-		enabled: !!id,
-	});
+export function useGetNarrator(id: string) {
+    return useQuery({
+        queryKey: authorKeys.detail(id),
+        queryFn: () => getNarrator(id),
+        enabled: !!id,
+    });
+}
+
+export function useUpdateNarrator() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, req }: { id: string; req: UpdateNarratorRequest }) => updateNarrator(id, req),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: authorKeys.lists() });
+        },
+    });
+}
+
+export function useDeleteNarrator() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => deleteNarrator(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: authorKeys.lists() });
+        },
+    });
 }

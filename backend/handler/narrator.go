@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (h *handler) CreateNarrator(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateNarrator(w http.ResponseWriter, r *http.Request) {
 	req, err := decodeRequestBody[CreateNarratorRequest](r)
 	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
@@ -23,7 +23,7 @@ func (h *handler) CreateNarrator(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusCreated, narrator)
 }
 
-func (h *handler) GetNarrator(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetNarrator(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid narrator id", http.StatusBadRequest)
@@ -44,7 +44,7 @@ func (h *handler) GetNarrator(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, narrator)
 }
 
-func (h *handler) ListNarrators(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListNarrators(w http.ResponseWriter, r *http.Request) {
 	narrators, err := h.repo.ListNarrators(r.Context())
 	if err != nil {
 		http.Error(w, "Failed to get narrators", http.StatusInternalServerError)
@@ -54,7 +54,7 @@ func (h *handler) ListNarrators(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, narrators)
 }
 
-func (h *handler) UpdateNarrator(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateNarrator(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid narrator id", http.StatusBadRequest)
@@ -81,7 +81,7 @@ func (h *handler) UpdateNarrator(w http.ResponseWriter, r *http.Request) {
 	writeJson(w, http.StatusOK, narrator)
 }
 
-func (h *handler) DeleteNarrator(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteNarrator(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid narrator id", http.StatusBadRequest)
@@ -96,7 +96,7 @@ func (h *handler) DeleteNarrator(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *handler) AddNarratorToBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) AddNarratorToBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
@@ -117,7 +117,7 @@ func (h *handler) AddNarratorToBook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h *handler) RemoveNarratorFromBook(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RemoveNarratorFromBook(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "Invalid book id", http.StatusBadRequest)
