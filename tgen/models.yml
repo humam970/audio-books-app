@@ -1,0 +1,11 @@
+config:
+  defaults:
+    # type:     string
+    # public:   true
+    # jsontag:  true
+    # nullable: false
+
+models:
+  creaetAuthorRequest:
+    name:
+      useDefualts: true

@@ -1,39 +1,63 @@
-import { createFileRoute } from '@tanstack/react-router'
-import logo from '../logo.svg'
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useAppForm } from "@/hooks/form/form";
+import { userNameSchema } from "@/schemas/_internal";
+import { createAuthorRequestDefaults } from "@/schemas/author";
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/')({
-  component: App,
-})
+export const Route = createFileRoute("/")({
+    component: MyApp,
+});
 
-function App() {
-  return (
-    <div className="text-center">
-      <header className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
-        <img
-          src={logo}
-          className="h-[40vmin] pointer-events-none animate-[spin_20s_linear_infinite]"
-          alt="logo"
-        />
-        <p>
-          Edit <code>src/routes/index.tsx</code> and save to reload.
-        </p>
-        <a
-          className="text-[#61dafb] hover:underline"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <a
-          className="text-[#61dafb] hover:underline"
-          href="https://tanstack.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn TanStack
-        </a>
-      </header>
-    </div>
-  )
+function MyApp() {
+    const form = useAppForm({
+        defaultValues: createAuthorRequestDefaults,
+        onSubmit: (data) => {
+            console.log(data);
+        },
+    });
+
+    return (
+        <div>
+            <ModeToggle />
+            <form.AppForm>
+                <form
+                    className="*:mb-5 mt-5"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        form.handleSubmit();
+                    }}
+                >
+                    <form.Field
+                        name="name"
+                        validators={{
+                            onChange: userNameSchema,
+                        }}
+                    >
+                        {(field) => {
+                            return (
+                                <div>
+                                    <pre>{JSON.stringify(field.state, null, 4)}</pre>
+                                    <Field>
+                                        <FieldLabel htmlFor={field.name}>Author Name</FieldLabel>
+                                        <Input
+                                            id={field.name}
+                                            onChange={(e) => field.handleChange(e.target.value)}
+                                            onBlur={() => field.handleBlur()}
+                                        />
+                                    </Field>
+                                </div>
+                            );
+                        }}
+                    </form.Field>
+
+                    <form.Subscribe selector={(state) => state.isDirty}>
+                        {(isDirty) => <Button disabled={!isDirty}>Submit</Button>}
+                    </form.Subscribe>
+                </form>
+            </form.AppForm>
+        </div>
+    );
 }

@@ -20,7 +20,7 @@ export type CreateBookRequest = {
     is_abridged: boolean;
 };
 
-export type UpdateBookRequest = Pick<CreateBookRequest, "title" | "rating" | "is_abridged">;
+export type UpdateBookRequest = Partial<Pick<CreateBookRequest, "title" | "rating" | "is_abridged">>;
 
 // ------------------------------------------------------------------
 
