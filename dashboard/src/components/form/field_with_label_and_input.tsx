@@ -3,38 +3,38 @@ import { Input } from "../ui/input";
 import { useFieldContext } from "@/hooks/form/form-context";
 import type { HTMLInputTypeAttribute } from "react";
 
-export default function LabelAndInput({
-    id,
-    label,
-    description,
-    placeholder,
-    type = "text",
-}: {
+type FieldProps = {
     id: string;
     label: string;
     description?: string;
     placeholder?: string;
     type?: HTMLInputTypeAttribute;
-}) {
+};
+
+/**
+ * Field > Label + Description + Input
+ */
+function TextField_LDI({ id, label, description, placeholder, type = "text" }: FieldProps) {
     const field = useFieldContext<string>();
-    const shouldShowError = field.state.meta.isTouched || field.state.meta.isValid;
+    const hasError = field.state.meta.isTouched && field.state.meta.errors.length > 0;
 
     return (
         <Field>
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
 
+            {description && <FieldDescription>{description}</FieldDescription>}
+
             <Input
                 id={id}
                 type={type}
                 placeholder={placeholder}
-                value={field.state.value ?? ""}
+                value={(field.state.value as string) ?? ""}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
+                aria-invalid={hasError}
             />
 
-            {description && <FieldDescription>{description}</FieldDescription>}
-
-            {shouldShowError && (
+            {hasError && (
                 <FieldError>
                     {field.state.meta.errors.map((error: any) => error?.message ?? error).join(", ")}
                 </FieldError>
@@ -42,3 +42,5 @@ export default function LabelAndInput({
         </Field>
     );
 }
+
+export default TextField_LDI;

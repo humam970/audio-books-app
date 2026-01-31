@@ -9,50 +9,128 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as NarratorsRouteImport } from './routes/narrators'
+import { Route as GenresRouteImport } from './routes/genres'
+import { Route as ChaptersRouteImport } from './routes/chapters'
+import { Route as BooksRouteImport } from './routes/books'
+import { Route as AuthorsRouteImport } from './routes/authors'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const NarratorsRoute = NarratorsRouteImport.update({
+  id: '/narrators',
+  path: '/narrators',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GenresRoute = GenresRouteImport.update({
+  id: '/genres',
+  path: '/genres',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChaptersRoute = ChaptersRouteImport.update({
+  id: '/chapters',
+  path: '/chapters',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksRoute = BooksRouteImport.update({
+  id: '/books',
+  path: '/books',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthorsRoute = AuthorsRouteImport.update({
+  id: '/authors',
+  path: '/authors',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/authors': typeof AuthorsRoute
+  '/books': typeof BooksRoute
+  '/chapters': typeof ChaptersRoute
+  '/genres': typeof GenresRoute
+  '/narrators': typeof NarratorsRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/authors': typeof AuthorsRoute
+  '/books': typeof BooksRoute
+  '/chapters': typeof ChaptersRoute
+  '/genres': typeof GenresRoute
+  '/narrators': typeof NarratorsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/authors': typeof AuthorsRoute
+  '/books': typeof BooksRoute
+  '/chapters': typeof ChaptersRoute
+  '/genres': typeof GenresRoute
+  '/narrators': typeof NarratorsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/authors' | '/books' | '/chapters' | '/genres' | '/narrators'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/authors' | '/books' | '/chapters' | '/genres' | '/narrators'
+  id:
+    | '__root__'
+    | '/authors'
+    | '/books'
+    | '/chapters'
+    | '/genres'
+    | '/narrators'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AuthorsRoute: typeof AuthorsRoute
+  BooksRoute: typeof BooksRoute
+  ChaptersRoute: typeof ChaptersRoute
+  GenresRoute: typeof GenresRoute
+  NarratorsRoute: typeof NarratorsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/narrators': {
+      id: '/narrators'
+      path: '/narrators'
+      fullPath: '/narrators'
+      preLoaderRoute: typeof NarratorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/genres': {
+      id: '/genres'
+      path: '/genres'
+      fullPath: '/genres'
+      preLoaderRoute: typeof GenresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chapters': {
+      id: '/chapters'
+      path: '/chapters'
+      fullPath: '/chapters'
+      preLoaderRoute: typeof ChaptersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books': {
+      id: '/books'
+      path: '/books'
+      fullPath: '/books'
+      preLoaderRoute: typeof BooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/authors': {
+      id: '/authors'
+      path: '/authors'
+      fullPath: '/authors'
+      preLoaderRoute: typeof AuthorsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AuthorsRoute: AuthorsRoute,
+  BooksRoute: BooksRoute,
+  ChaptersRoute: ChaptersRoute,
+  GenresRoute: GenresRoute,
+  NarratorsRoute: NarratorsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
