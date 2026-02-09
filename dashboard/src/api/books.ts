@@ -9,7 +9,7 @@ import type {
     Book,
     CreateBookRequest,
     UpdateBookRequest,
-} from "../models/book";
+} from "@/schemas/book";
 
 export async function createBook(req: CreateBookRequest): Promise<Book> {
     const res = await api.post<Book>("/books", req);

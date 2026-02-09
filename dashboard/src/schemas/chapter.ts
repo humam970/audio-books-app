@@ -15,6 +15,8 @@ export const ChapterSchema = z
         path: ["end_time"],
     });
 
+export type Chapter = z.infer<typeof ChapterSchema>;
+
 export const CreateChapterRequestSchema = z.object({
     title: z.string(),
     start_time: z.number(),

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { chapterKeys } from "./keys";
-import { createChapter, deleteChapter, getChapter, listChapters, updateChapter } from "../../api/chapters";
-import type { UpdateChapterRequest } from "@/models/chapter";
+import { createChapter, deleteChapter, getChapter, listChapters, updateChapter } from "@/api/chapters";
+import type { UpdateChapterRequest } from "@/schemas/chapter";
 
 export function useCreateChapter() {
     const queryClient = useQueryClient();

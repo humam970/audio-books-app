@@ -1,5 +1,5 @@
 import api from "./index";
-import type { Chapter, CreateChapterRequest, UpdateChapterRequest } from "../models/chapter";
+import type { Chapter, CreateChapterRequest, UpdateChapterRequest } from "@/schemas/chapter";
 
 export async function createChapter(genreData: CreateChapterRequest): Promise<Chapter> {
     const res = await api.post<Chapter>("/chapters", genreData);

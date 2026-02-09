@@ -9,15 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as NarratorsRouteImport } from './routes/narrators'
+import { Route as New_releaseRouteImport } from './routes/new_release'
+import { Route as LibraryRouteImport } from './routes/library'
 import { Route as GenresRouteImport } from './routes/genres'
-import { Route as ChaptersRouteImport } from './routes/chapters'
-import { Route as BooksRouteImport } from './routes/books'
-import { Route as AuthorsRouteImport } from './routes/authors'
+import { Route as IndexRouteImport } from './routes/index'
 
-const NarratorsRoute = NarratorsRouteImport.update({
-  id: '/narrators',
-  path: '/narrators',
+const New_releaseRoute = New_releaseRouteImport.update({
+  id: '/new_release',
+  path: '/new_release',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GenresRoute = GenresRouteImport.update({
@@ -25,73 +29,60 @@ const GenresRoute = GenresRouteImport.update({
   path: '/genres',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChaptersRoute = ChaptersRouteImport.update({
-  id: '/chapters',
-  path: '/chapters',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BooksRoute = BooksRouteImport.update({
-  id: '/books',
-  path: '/books',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthorsRoute = AuthorsRouteImport.update({
-  id: '/authors',
-  path: '/authors',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/authors': typeof AuthorsRoute
-  '/books': typeof BooksRoute
-  '/chapters': typeof ChaptersRoute
+  '/': typeof IndexRoute
   '/genres': typeof GenresRoute
-  '/narrators': typeof NarratorsRoute
+  '/library': typeof LibraryRoute
+  '/new_release': typeof New_releaseRoute
 }
 export interface FileRoutesByTo {
-  '/authors': typeof AuthorsRoute
-  '/books': typeof BooksRoute
-  '/chapters': typeof ChaptersRoute
+  '/': typeof IndexRoute
   '/genres': typeof GenresRoute
-  '/narrators': typeof NarratorsRoute
+  '/library': typeof LibraryRoute
+  '/new_release': typeof New_releaseRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/authors': typeof AuthorsRoute
-  '/books': typeof BooksRoute
-  '/chapters': typeof ChaptersRoute
+  '/': typeof IndexRoute
   '/genres': typeof GenresRoute
-  '/narrators': typeof NarratorsRoute
+  '/library': typeof LibraryRoute
+  '/new_release': typeof New_releaseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/authors' | '/books' | '/chapters' | '/genres' | '/narrators'
+  fullPaths: '/' | '/genres' | '/library' | '/new_release'
   fileRoutesByTo: FileRoutesByTo
-  to: '/authors' | '/books' | '/chapters' | '/genres' | '/narrators'
-  id:
-    | '__root__'
-    | '/authors'
-    | '/books'
-    | '/chapters'
-    | '/genres'
-    | '/narrators'
+  to: '/' | '/genres' | '/library' | '/new_release'
+  id: '__root__' | '/' | '/genres' | '/library' | '/new_release'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthorsRoute: typeof AuthorsRoute
-  BooksRoute: typeof BooksRoute
-  ChaptersRoute: typeof ChaptersRoute
+  IndexRoute: typeof IndexRoute
   GenresRoute: typeof GenresRoute
-  NarratorsRoute: typeof NarratorsRoute
+  LibraryRoute: typeof LibraryRoute
+  New_releaseRoute: typeof New_releaseRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/narrators': {
-      id: '/narrators'
-      path: '/narrators'
-      fullPath: '/narrators'
-      preLoaderRoute: typeof NarratorsRouteImport
+    '/new_release': {
+      id: '/new_release'
+      path: '/new_release'
+      fullPath: '/new_release'
+      preLoaderRoute: typeof New_releaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/genres': {
@@ -101,36 +92,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GenresRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/chapters': {
-      id: '/chapters'
-      path: '/chapters'
-      fullPath: '/chapters'
-      preLoaderRoute: typeof ChaptersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/books': {
-      id: '/books'
-      path: '/books'
-      fullPath: '/books'
-      preLoaderRoute: typeof BooksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/authors': {
-      id: '/authors'
-      path: '/authors'
-      fullPath: '/authors'
-      preLoaderRoute: typeof AuthorsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  AuthorsRoute: AuthorsRoute,
-  BooksRoute: BooksRoute,
-  ChaptersRoute: ChaptersRoute,
+  IndexRoute: IndexRoute,
   GenresRoute: GenresRoute,
-  NarratorsRoute: NarratorsRoute,
+  LibraryRoute: LibraryRoute,
+  New_releaseRoute: New_releaseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

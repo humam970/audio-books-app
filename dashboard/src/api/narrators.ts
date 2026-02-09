@@ -1,4 +1,4 @@
-import type { CreateNarratorRequest, Narrator, UpdateNarratorRequest } from "../models/narrator";
+import type { CreateNarratorRequest, Narrator, UpdateNarratorRequest } from "@/schemas/narrator";
 import api from "./index";
 
 export async function createNarrator(genreData: CreateNarratorRequest): Promise<Narrator> {

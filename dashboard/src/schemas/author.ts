@@ -1,13 +1,11 @@
 import z from "zod";
-import { userBioSchema, uuidSchema, passwordSchema, userNameSchema } from "./_internal";
+import { userBioSchema, uuidSchema, userNameSchema } from "./_internal";
 
-export const AuthorSchema = z
-    .object({
-        id: uuidSchema,
-        name: userNameSchema,
-        bio: userBioSchema,
-    })
-    .and(passwordSchema);
+export const AuthorSchema = z.object({
+    id: uuidSchema,
+    name: userNameSchema,
+    bio: userBioSchema,
+});
 
 export type Author = z.infer<typeof AuthorSchema>;
 

@@ -1,5 +1,5 @@
 import api from "./index";
-import type { CreateGenreRequest, Genre } from "../models/genre";
+import type { CreateGenreRequest, Genre } from "@/schemas/genre";
 
 export async function createGenre(genreData: CreateGenreRequest): Promise<Genre> {
     const res = await api.post<Genre>("/genres", genreData);

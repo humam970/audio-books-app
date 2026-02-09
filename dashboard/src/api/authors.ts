@@ -1,9 +1,9 @@
 import api from "./index";
-import type { Author, CreateAuthorRequest, UpdateAuthorRequest } from "../models/author";
+import type { Author, CreateAuthorRequest, UpdateAuthorRequest } from "@/schemas/author";
 
 export async function createAuthor(req: CreateAuthorRequest): Promise<Author> {
     const res = await api.post<Author>("/authors", req);
-    return res.data;
+    return res.data as Author;
 }
 
 export async function listAuthors(): Promise<Author[]> {

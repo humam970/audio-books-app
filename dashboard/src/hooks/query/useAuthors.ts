@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authorKeys } from "./keys";
 import { createAuthor, deleteAuthor, getAuthor, listAuthors, updateAuthor } from "@/api/authors";
-import type { UpdateAuthorRequest } from "@/models/author";
+import type { UpdateAuthorRequest } from "@/schemas/author";
 
 export function useCreateAuthor() {
     const queryClient = useQueryClient();

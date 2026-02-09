@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { genreKeys } from "./keys";
-import { createGenre, deleteGenre, getGenre, listGenres } from "../../api/genres";
+import { createGenre, deleteGenre, getGenre, listGenres } from "@/api/genres";
 
 export function useCreateGenre() {
     const queryClient = useQueryClient();

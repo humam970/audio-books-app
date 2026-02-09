@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authorKeys } from "./keys";
 import { createNarrator, deleteNarrator, getNarrator, listNarrators, updateNarrator } from "../../api/narrators";
-import type { UpdateNarratorRequest } from "@/models/narrator";
+import type { UpdateNarratorRequest } from "@/schemas/narrator";
 
 export function useCreateNarrator() {
     const queryClient = useQueryClient();

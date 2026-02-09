@@ -18,7 +18,7 @@ import type {
     AddGenreToBookRequest,
     AddNarratorToBookRequest,
     UpdateBookRequest,
-} from "@/models/book";
+} from "@/schemas/book";
 
 export function useCreateBook() {
     const queryClient = useQueryClient();

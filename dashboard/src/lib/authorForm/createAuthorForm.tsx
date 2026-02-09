@@ -1,25 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
 import { useAppForm } from "@/hooks/form/form";
+import { useCreateAuthor } from "@/hooks/query/useAuthors";
 import { createAuthorRequestDefaults, CreateAuthorRequestSchema } from "@/schemas/author";
-import { useStore } from "@tanstack/react-form";
 
 function CreateAuthorForm() {
+    const { mutate, isPending, isError, error } = useCreateAuthor();
+
     const form = useAppForm({
         defaultValues: createAuthorRequestDefaults,
-        defaultState: {
-            canSubmit: false,
-        },
         validators: {
             onChange: CreateAuthorRequestSchema,
             onSubmit: ({ formApi, value }) => {
-                console.log(formApi.fieldMetaDerived);
-                console.log(value);
+                mutate(value);
             },
         },
     });
-
-    const store = useStore(form.store, (state) => state);
 
     return (
         <form
@@ -29,7 +25,6 @@ function CreateAuthorForm() {
                 form.handleSubmit();
             }}
         >
-            <pre>{JSON.stringify(store, null, 4)}</pre>
             <FieldGroup>
                 <form.AppField name="name">
                     {(field) => (
@@ -42,7 +37,7 @@ function CreateAuthorForm() {
                     )}
                 </form.AppField>
 
-                <form.AppField name="bio" validators={{}}>
+                <form.AppField name="bio">
                     {(field) => (
                         <field.TextField_LDI
                             id="bio"
@@ -53,9 +48,13 @@ function CreateAuthorForm() {
                     )}
                 </form.AppField>
 
-                <Button type="submit" variant="secondary" disabled={form.state.canSubmit}>
-                    Submit
-                </Button>
+                <form.Subscribe selector={(state) => [state.canSubmit, state.isDirty]}>
+                    {([canSubmit, isDirty]) => (
+                        <Button type="submit" disabled={!canSubmit || !isDirty}>
+                            Submit
+                        </Button>
+                    )}
+                </form.Subscribe>
             </FieldGroup>
         </form>
     );
