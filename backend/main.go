@@ -26,7 +26,7 @@ import (
 )
 
 func main() {
-	connStr := ""
+	connStr := "postgres://test:test@localhost:5433/test?sslmode=disable"
 
 	{
 		db, err := sql.Open("pgx", connStr)

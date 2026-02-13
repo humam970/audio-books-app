@@ -1,0 +1,38 @@
+services:
+  db:
+    container_name: primary_db
+    image: postgres:18-alpine
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./database/postgres-data:/var/lib/postgresql
+    environment:
+      POSTGRES_CONNECTION: "postgres://test:test@localhost:5433/test?sslmode=disable"
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  s3:
+    container_name: minio
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"      
+      - "9001:9001"      
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - ./minio-data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
