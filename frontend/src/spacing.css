@@ -1,48 +1,6 @@
 /* @link https://utopia.fyi/space/calculator?c=360,17,1.2,1240,19,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6|9,2xs-4xl|m-xl&g=s,l,xl,12 */
 
 :root {
-  /* Space 3xs: 4px → 5px */
-  --space-3xs: clamp(0.25rem, 0.2244rem + 0.1136vw, 0.3125rem);
-  /* Space 2xs: 9px → 10px */
-  --space-2xs: clamp(0.5625rem, 0.5369rem + 0.1136vw, 0.625rem);
-  /* Space xs: 13px → 14px */
-  --space-xs: clamp(0.8125rem, 0.7869rem + 0.1136vw, 0.875rem);
-  /* Space s: 17px → 19px */
-  --space-s: clamp(1.0625rem, 1.0114rem + 0.2273vw, 1.1875rem);
-  /* Space m: 26px → 29px */
-  --space-m: clamp(1.625rem, 1.5483rem + 0.3409vw, 1.8125rem);
-  /* Space l: 34px → 38px */
-  --space-l: clamp(2.125rem, 2.0227rem + 0.4545vw, 2.375rem);
-  /* Space xl: 51px → 57px */
-  --space-xl: clamp(3.1875rem, 3.0341rem + 0.6818vw, 3.5625rem);
-  /* Space 2xl: 68px → 76px */
-  --space-2xl: clamp(4.25rem, 4.0455rem + 0.9091vw, 4.75rem);
-  /* Space 3xl: 102px → 114px */
-  --space-3xl: clamp(6.375rem, 6.0682rem + 1.3636vw, 7.125rem);
-  /* Space 4xl: 153px → 171px */
-  --space-4xl: clamp(9.5625rem, 9.1023rem + 2.0455vw, 10.6875rem);
-
-  /* One-up pairs */
-  /* Space 3xs-2xs: 4px → 10px */
-  --space-3xs-2xs: clamp(0.25rem, 0.0966rem + 0.6818vw, 0.625rem);
-  /* Space 2xs-xs: 9px → 14px */
-  --space-2xs-xs: clamp(0.5625rem, 0.4347rem + 0.5682vw, 0.875rem);
-  /* Space xs-s: 13px → 19px */
-  --space-xs-s: clamp(0.8125rem, 0.6591rem + 0.6818vw, 1.1875rem);
-  /* Space s-m: 17px → 29px */
-  --space-s-m: clamp(1.0625rem, 0.7557rem + 1.3636vw, 1.8125rem);
-  /* Space m-l: 26px → 38px */
-  --space-m-l: clamp(1.625rem, 1.3182rem + 1.3636vw, 2.375rem);
-  /* Space l-xl: 34px → 57px */
-  --space-l-xl: clamp(2.125rem, 1.5369rem + 2.6136vw, 3.5625rem);
-  /* Space xl-2xl: 51px → 76px */
-  --space-xl-2xl: clamp(3.1875rem, 2.5483rem + 2.8409vw, 4.75rem);
-  /* Space 2xl-3xl: 68px → 114px */
-  --space-2xl-3xl: clamp(4.25rem, 3.0739rem + 5.2273vw, 7.125rem);
-  /* Space 3xl-4xl: 102px → 171px */
-  --space-3xl-4xl: clamp(6.375rem, 4.6108rem + 7.8409vw, 10.6875rem);
-
-  /* Custom pairs */
   /* Space 2xs-4xl: 9px → 171px */
   --space-2xs-4xl: clamp(0.5625rem, -3.5795rem + 18.4091vw, 10.6875rem);
   /* Space m-xl: 26px → 57px */

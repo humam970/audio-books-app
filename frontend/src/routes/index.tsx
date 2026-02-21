@@ -4,15 +4,15 @@ import FeaturedBook from "./-components/FeaturedBook";
 import BooksGrid from "./-components/BooksGrid";
 
 export const Route = createFileRoute("/")({
-    component: RouteComponent,
+	component: RouteComponent,
 });
 
 function RouteComponent() {
-    return (
-        <div className="mt-section-separator *:mb-section-separator px-gutter">
-            <FeaturedBook />
-            <GenreSelector />
-            <BooksGrid />
-        </div>
-    );
+	return (
+		<div className="mt-section-separator *:mb-section-separator px-gutter">
+			<FeaturedBook />
+			<GenreSelector />
+			<BooksGrid />
+		</div>
+	);
 }

@@ -1,7 +1,11 @@
-import { BellIcon, HeadphonesIcon, LibraryIcon, UserIcon } from "lucide-react";
-import Navbar from "./Navbar";
+import UserActions from "./UserActions";
+import DesktopNavbar from "./DesktopNavbar";
+import MobileNavbar from "./MobileNavbar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function Header() {
+    const isMobile = useIsMobile();
+
     return (
         <header
             className="
@@ -12,23 +16,9 @@ function Header() {
             h-18
             "
         >
-            <a href="#" className="text-primary transition-colors hover:opacity-80">
-                <HeadphonesIcon size={44} />
-            </a>
+            {!isMobile ? <DesktopNavbar /> : <MobileNavbar />}
 
-            <Navbar />
-
-            <div className="flex items-center gap-4 text-primary">
-                <button className="p-2 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors">
-                    <BellIcon size={24} />
-                </button>
-                <button className="p-2 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors">
-                    <LibraryIcon size={24} />
-                </button>
-                <button className="p-2 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors">
-                    <UserIcon size={24} />
-                </button>
-            </div>
+            <UserActions />
         </header>
     );
 }

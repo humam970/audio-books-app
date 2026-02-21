@@ -53,7 +53,7 @@ code {
   --sidebar-border: oklch(0.87 0.01 267.40);
   --sidebar-ring: oklch(0.59 0.20 277.06);
 
-  /* --radius: 0.625rem; */
+  --radius: 0.625rem;
 
   --success: oklch(var(--color-green-300));
   --warning: oklch(var(--color-amber-300));
@@ -137,28 +137,6 @@ code {
   --text-9xl: var(--step-10);
   --text-9xl--line-height: 1.1;
 
-  --spacing-3xs: var(--space-3xs);
-  --spacing-2xs: var(--space-2xs);
-  --spacing-xs: var(--space-xs);
-  --spacing-sm: var(--space-s);
-  --spacing-md: var(--space-m);
-  --spacing-lg: var(--space-l);
-  --spacing-xl: var(--space-xl);
-  --spacing-2xl: var(--space-2xl);
-  --spacing-3xl: var(--space-3xl);
-
-  --spacing-3xs-to-2xs: var(--space-3xs-2xs);
-  --spacing-2xs-to-xs: var(--space-2xs-xs);
-  --spacing-xs-to-sm: var(--space-xs-s);
-  --spacing-sm-to-md: var(--space-s-m);
-  --spacing-md-to-lg: var(--space-m-l);
-  --spacing-lg-to-xl: var(--space-l-xl);
-  --spacing-xl-to-2xl: var(--space-xl-2xl);
-  --spacing-2xl-to-3xl: var(--space-2xl-3xl);
-
-  --spacing-s-to-2xl: var(--space-s-2xl);
-  --spacing-s-to-3xl: var(--space-s-3xl);
-
   --spacing-gutter: var(--space-2xs-4xl);
   --spacing-section-separator: var(--space-m-xl);
 
@@ -206,10 +184,10 @@ code {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* --radius-sm: calc(var(--radius) - 4px); */
-  /* --radius-md: calc(var(--radius) - 2px); */
-  /* --radius-lg: var(--radius); */
-  /* --radius-xl: calc(var(--radius) + 4px); */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 @layer base {

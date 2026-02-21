@@ -1,11 +1,10 @@
 package handler
 
 import (
-	l "bookserve/logy"
-	"database/sql"
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 func (h *Handler) CreateAuthor(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +49,7 @@ func (h *Handler) GetAuthor(w http.ResponseWriter, r *http.Request) {
 
 	author, err := h.repo.GetAuthor(r.Context(), id)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			l.Authors.Warn().
 				Err(err).
 				Msg("aurhor_not_found")
@@ -100,7 +99,7 @@ func (h *Handler) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
 
 	author, err := h.repo.UpdateAuthor(r.Context(), req.ToParams(id))
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			http.Error(w, "Author not found", http.StatusNotFound)
 			return
 		}

@@ -41,11 +41,11 @@ function BookCard({ title, authorName, genre }: BookCardProps) {
     return (
         <figure
             className="aspect-3/4
-                w-[calc((100cqi-var(--space-s-m)*1)/2)]
-             sm:w-[calc((100cqi-var(--space-s-m)*2)/3)]
-             lg:w-[calc((100cqi-var(--space-s-m)*3)/4)]
-             xl:w-[calc((100cqi-var(--space-s-m)*4)/5)]
-            2xl:w-[calc((100cqi-var(--space-s-m)*5)/6)]
+                w-[calc((100cqi-var(--spacing)*6*1)/2)]
+             sm:w-[calc((100cqi-var(--spacing)*6*2)/3)]
+             lg:w-[calc((100cqi-var(--spacing)*6*3)/4)]
+             xl:w-[calc((100cqi-var(--spacing)*6*4)/5)]
+            2xl:w-[calc((100cqi-var(--spacing)*6*5)/6)]
             "
         >
             <img src="/featured_book.png" className="w-full object-fill rounded-lg mb-2xs" />
@@ -66,7 +66,7 @@ function BookCard({ title, authorName, genre }: BookCardProps) {
 
 function BooksGrid() {
     return (
-        <section className="@container flex flex-wrap gap-sm-to-md">
+        <section className="@container flex flex-wrap gap-6">
             {books.map((book) => (
                 <BookCard title={book.title} genre={book.genre} authorName={book.author} />
             ))}
