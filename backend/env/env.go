@@ -24,21 +24,18 @@ type config struct {
 	S3Key    string
 	S3Url    string
 
-	// App Meta
-	AppEnv string // "production" or "development"
+	AppEnv string
 	Port   string
 
-	// Security & Auth
 	JwtKey        []byte
 	JwtExpiration time.Duration
 	AdminToken    string
 	FrontEndUrl   string
 	BackEndUrl    string
 
-	// Third Party
 	TurnstileSecret string
 	ResendApiKey    string
-	SupportEmail    string // The "From" email address
+	SupportEmail    string
 }
 
 func (c *config) GetDSN() string {
