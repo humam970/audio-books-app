@@ -1,1 +1,1 @@
-Toy project for my resume
+Simple project for my resume
